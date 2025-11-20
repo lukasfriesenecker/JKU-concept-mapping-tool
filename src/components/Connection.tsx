@@ -1,18 +1,18 @@
 interface ConnectionProps {
-  label: string;
+  label: string
   start: {
-    x: number;
-    y: number;
-  };
+    x: number
+    y: number
+  }
   end: {
-    x: number;
-    y: number;
-  };
+    x: number
+    y: number
+  }
 }
 
 function Connection({ label, start, end }: ConnectionProps) {
-  const centerX = (start.x + end.x) / 2;
-  const centerY = (start.y + end.y) / 2;
+  const centerX = (start.x + end.x) / 2
+  const centerY = (start.y + end.y) / 2
 
   return (
     <g>
@@ -45,7 +45,7 @@ function Connection({ label, start, end }: ConnectionProps) {
         </text>
       </g>
     </g>
-  );
+  )
 }
 
-export default Connection;
+export default Connection

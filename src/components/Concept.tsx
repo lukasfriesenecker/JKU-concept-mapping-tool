@@ -1,7 +1,7 @@
 interface ConceptProps {
-  label: string;
-  x: number;
-  y: number;
+  label: string
+  x: number
+  y: number
 }
 
 function Concept({ label, x, y }: ConceptProps) {
@@ -13,7 +13,7 @@ function Concept({ label, x, y }: ConceptProps) {
         width="100"
         height="50"
         rx="8"
-        className="fill-concept-background stroke-2 stroke-concept-border"
+        className="fill-concept-background stroke-concept-border stroke-2"
       />
 
       <text
@@ -25,7 +25,7 @@ function Concept({ label, x, y }: ConceptProps) {
         {label}
       </text>
     </g>
-  );
+  )
 }
 
-export default Concept;
+export default Concept
