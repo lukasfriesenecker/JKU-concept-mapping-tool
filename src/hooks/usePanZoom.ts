@@ -40,11 +40,11 @@ function usePanZoom() {
             const scaleRatio = newScale / current.scale
 
             const svgElementPosition = svgElement.getBoundingClientRect()
-            const localCenterX = event.client.x - svgElementPosition.left
-            const localCenterY = event.client.y - svgElementPosition.top
+            const localX = event.client.x - svgElementPosition.left
+            const localY = event.client.y - svgElementPosition.top
 
-            const newX = localCenterX - (localCenterX - current.x) * scaleRatio
-            const newY = localCenterY - (localCenterY - current.y) * scaleRatio
+            const newX = localX - (localX - current.x) * scaleRatio
+            const newY = localY - (localY - current.y) * scaleRatio
 
             setViewport({ x: newX, y: newY, scale: newScale })
           },

@@ -14,7 +14,11 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
   const ref = useDraggable(id, scale, onDrag)
 
   return (
-    <g ref={ref} transform={`translate(${x}, ${y})`}>
+    <g
+      ref={ref}
+      transform={`translate(${x}, ${y})`}
+      onDoubleClick={(event) => event.stopPropagation()}
+    >
       <rect
         width="100"
         height="50"
