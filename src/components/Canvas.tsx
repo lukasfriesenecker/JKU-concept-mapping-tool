@@ -1,8 +1,11 @@
 import { useCallback, useState } from 'react'
 import Connection from './Connection'
 import Concept from './Concept'
+import usePanZoom from '../hooks/usePanZoom'
 
 function Canvas() {
+  const { ref, viewport } = usePanZoom()
+
   const [concepts, setConcepts] = useState([
     { id: 1, label: 'Concept 1', x: 150, y: 200 },
     { id: 2, label: 'Concept 2', x: 150, y: 500 },
@@ -45,15 +48,16 @@ function Canvas() {
         <h1 className="font-bold">Concept Mapping Tool</h1>
       </div>
 
-      <svg className="h-full w-full">
+      <svg ref={ref} className="h-full w-full">
         <defs>
           <pattern
             id="dot-pattern"
-            x="0"
-            y="0"
+            x={viewport.x}
+            y={viewport.y}
             width="20"
             height="20"
             patternUnits="userSpaceOnUse"
+            patternTransform={`scale(${viewport.scale})`}
           >
             <circle cx="2" cy="2" r="1" className="fill-muted-foreground" />
           </pattern>
@@ -61,7 +65,9 @@ function Canvas() {
 
         <rect className="h-full w-full fill-[url(#dot-pattern)]" />
 
-        <g>
+        <g
+          transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`}
+        >
           {connections.map((connection) => (
             <Connection
               key={connection.id}

@@ -10,10 +10,10 @@ interface ConceptProps {
 }
 
 function Concept({ id, label, x, y, onDrag }: ConceptProps) {
-  const draggableRef = useDraggable(id, onDrag)
+  const ref = useDraggable(id, onDrag)
 
   return (
-    <g ref={draggableRef} transform={`translate(${x}, ${y})`}>
+    <g ref={ref} transform={`translate(${x}, ${y})`}>
       <rect
         width="100"
         height="50"

@@ -5,15 +5,15 @@ function useDraggable(
   id: number,
   onDrag: (id: number, dx: number, dy: number) => void
 ) {
-  const draggableRef = useRef(null)
+  const ref = useRef(null)
 
   const onDragRef = useRef(onDrag)
   onDragRef.current = onDrag
 
   useEffect(() => {
-    if (!draggableRef.current) return
+    if (!ref.current) return
 
-    const interactable = interact(draggableRef.current).draggable({
+    const interactable = interact(ref.current).draggable({
       listeners: {
         move(event) {
           onDragRef.current(id, event.dx, event.dy)
@@ -26,7 +26,7 @@ function useDraggable(
     }
   }, [id])
 
-  return draggableRef
+  return ref
 }
 
 export default useDraggable
