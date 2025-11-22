@@ -6,11 +6,12 @@ interface ConceptProps {
   label: string
   x: number
   y: number
+  scale: number
   onDrag: (id: number, dx: number, dy: number) => void
 }
 
-function Concept({ id, label, x, y, onDrag }: ConceptProps) {
-  const ref = useDraggable(id, onDrag)
+function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
+  const ref = useDraggable(id, scale, onDrag)
 
   return (
     <g ref={ref} transform={`translate(${x}, ${y})`}>

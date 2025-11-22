@@ -52,12 +52,12 @@ function Canvas() {
         <defs>
           <pattern
             id="dot-pattern"
-            x={viewport.x}
-            y={viewport.y}
+            x="0"
+            y="0"
             width="20"
             height="20"
             patternUnits="userSpaceOnUse"
-            patternTransform={`scale(${viewport.scale})`}
+            patternTransform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`}
           >
             <circle cx="2" cy="2" r="1" className="fill-muted-foreground" />
           </pattern>
@@ -84,6 +84,7 @@ function Canvas() {
               label={concept.label}
               x={concept.x}
               y={concept.y}
+              scale={viewport.scale}
               onDrag={handleConceptDrag}
             />
           ))}

@@ -3,9 +3,13 @@ import { useEffect, useRef } from 'react'
 
 function useDraggable(
   id: number,
+  scale: number,
   onDrag: (id: number, dx: number, dy: number) => void
 ) {
   const ref = useRef(null)
+
+  const scaleRef = useRef(scale)
+  scaleRef.current = scale
 
   const onDragRef = useRef(onDrag)
   onDragRef.current = onDrag
@@ -16,7 +20,11 @@ function useDraggable(
     const interactable = interact(ref.current).draggable({
       listeners: {
         move(event) {
-          onDragRef.current(id, event.dx, event.dy)
+          onDragRef.current(
+            id,
+            event.dx / scaleRef.current,
+            event.dy / scaleRef.current
+          )
         },
       },
     })
