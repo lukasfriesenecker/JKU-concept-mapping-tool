@@ -11,7 +11,7 @@ function Canvas() {
     { id: 1, label: 'Concept 1', x: 150, y: 500 },
   ])
 
-  const [connections, setConnections] = useState([
+  const [connections] = useState([
     { id: 0, label: 'Connection 0', from: 0, to: 1 },
   ])
 
