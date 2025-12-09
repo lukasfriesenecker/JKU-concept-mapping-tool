@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 import useDraggable from '../hooks/useDraggable'
 
 interface ConceptProps {
@@ -13,6 +13,8 @@ interface ConceptProps {
 function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
   const ref = useDraggable(id, scale, onDrag)
 
+
+
   return (
     <g
       ref={ref}
@@ -26,8 +28,15 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
         className="fill-concept-background stroke-concept-border stroke-2"
       />
 
+      <circle
+        cx={50 / 2 - 10} 
+        cy={25}
+        r={5}
+        className="fill-blue-500"
+      />
+
       <text
-        x={50}
+        x={60}
         y={30}
         textAnchor="middle"
         className="text-sm font-medium select-none"
