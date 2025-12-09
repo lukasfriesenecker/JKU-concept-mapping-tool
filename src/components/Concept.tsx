@@ -1,5 +1,6 @@
-import { memo, useRef } from 'react'
+import { memo, useState } from 'react'
 import useDraggable from '../hooks/useDraggable'
+import useScalable from '../hooks/useScalable'
 
 interface ConceptProps {
   id: number
@@ -11,29 +12,33 @@ interface ConceptProps {
 }
 
 function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
-  const ref = useDraggable(id, scale, onDrag)
+  const [localScale, setLocalScale] = useState(scale)
 
+  const dragRef = useDraggable(id, scale, onDrag)
 
+  const scaleRef = useScalable(id, localScale, (newScale) => {
+    setLocalScale(newScale)
+  })
+
+  const combinedRef = (el: SVGGElement | null) => {
+    dragRef.current = el
+  }
 
   return (
     <g
-      ref={ref}
-      transform={`translate(${x}, ${y})`}
-      onDoubleClick={(event) => event.stopPropagation()}
+      ref={combinedRef}
+      transform={`translate(${x}, ${y}) scale(${localScale})`}
+      onDoubleClick={(e) => e.stopPropagation()}
     >
       <rect
+        ref={scaleRef}
         width="100"
         height="50"
         rx="8"
-        className="fill-concept-background stroke-concept-border stroke-2"
+        className="fill-concept-background stroke-concept-border stroke-2 cursor-pointer"
       />
 
-      <circle
-        cx={50 / 2 - 10} 
-        cy={25}
-        r={5}
-        className="fill-blue-500"
-      />
+      <circle cx={50 / 2 - 10} cy={25} r={5} className="fill-blue-500" />
 
       <text
         x={60}
