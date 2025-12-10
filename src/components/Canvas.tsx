@@ -11,7 +11,13 @@ function Canvas() {
     { id: 1, label: 'Concept 1', x: 150, y: 500 },
   ])
 
-  const [connections] = useState([
+  const [draggingConnection, setDraggingConnection] = useState<{
+    from: number
+    x: number
+    y: number
+  } | null>(null)
+
+  const [connections, setConnections] = useState([
     { id: 0, label: 'Connection 0', from: 0, to: 1 },
   ])
 
@@ -41,6 +47,59 @@ function Canvas() {
     },
     []
   )
+
+
+  const handleCircleMouseDown = (id: number) => {
+    const c = concepts.find((cn) => cn.id === id)
+    if (!c) return
+
+    const circleOffsetX = 15
+    const circleOffsetY = 25
+
+    setDraggingConnection({
+      from: id,
+      x: c.x + circleOffsetX,
+      y: c.y + circleOffsetY,
+    })
+  }
+
+const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+  if (!draggingConnection) return;
+
+  const svgRect = event.currentTarget.getBoundingClientRect()
+  const { x, y } = toCanvasCoordinates(
+    event.clientX - svgRect.left,
+    event.clientY - svgRect.top
+  )
+
+  setDraggingConnection(prev => prev ? { ...prev, x, y } : null)
+}
+
+
+  const handleMouseUp = () => {
+
+    if (draggingConnection) {
+      console.log("mouse up")
+      const toConcept = concepts.find(
+        (c) =>
+          Math.abs(c.x + 50 - draggingConnection.x) < 50 &&
+          Math.abs(c.y + 25 - draggingConnection.y) < 25
+      )
+      if (toConcept && toConcept.id !== draggingConnection.from) {
+        setConnections((prev) => [
+          ...prev,
+          {
+            id: Date.now(),
+            label: `Connection ${prev.length}`,
+            from: draggingConnection.from,
+            to: toConcept.id,
+          },
+        ])
+      }
+      setDraggingConnection(null)
+    }
+  }
+
 
   const toCanvasCoordinates = useCallback(
     (localX: number, localY: number) => {
@@ -79,6 +138,8 @@ function Canvas() {
         ref={ref}
         className="h-full w-full"
         onDoubleClick={handleDoubleClick}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
       >
         <defs>
           <pattern
@@ -95,6 +156,17 @@ function Canvas() {
         </defs>
 
         <rect className="h-full w-full fill-[url(#dot-pattern)]" />
+
+        {draggingConnection && (
+          <line
+            x1={getConceptCenter(draggingConnection.from).x}
+            y1={getConceptCenter(draggingConnection.from).y}
+            x2={draggingConnection.x}
+            y2={draggingConnection.y}
+            stroke="red"
+            strokeWidth={2}
+          />
+        )}
 
         <g
           transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`}
@@ -117,6 +189,7 @@ function Canvas() {
               y={concept.y}
               scale={viewport.scale}
               onDrag={handleConceptDrag}
+              onCircleMouseDown={handleCircleMouseDown}
             />
           ))}
         </g>

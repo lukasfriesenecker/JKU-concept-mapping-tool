@@ -9,9 +9,10 @@ interface ConceptProps {
   y: number
   scale: number
   onDrag: (id: number, dx: number, dy: number) => void
+  onCircleMouseDown?: (conceptId: number) => void
 }
 
-function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
+function Concept({ id, label, x, y, scale, onDrag, onCircleMouseDown }: ConceptProps) {
   const [localScale, setLocalScale] = useState(scale)
 
   const dragRef = useDraggable(id, scale, onDrag)
@@ -35,7 +36,17 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
         className="fill-concept-background stroke-concept-border stroke-2 cursor-pointer"
       />
 
-      <circle cx={50 / 2 - 10} cy={25} r={5} className="fill-blue-500" />
+      <circle
+        cx={50 / 2 - 10}
+        cy={25}
+        r={5}
+        className="fill-blue-500 cursor-pointer"
+        onMouseDown={(e) => {
+          e.stopPropagation()
+            console.log("circle down!")           
+onCircleMouseDown?.(id)
+        }}
+      />
 
       <text
         x={60}

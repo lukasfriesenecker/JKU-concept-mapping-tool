@@ -15,6 +15,7 @@ function Connection({ label, start, end }: ConnectionProps) {
   const centerY = (start.y + end.y) / 2
 
   return (
+    
     <g>
       <line
         x1={start.x}
