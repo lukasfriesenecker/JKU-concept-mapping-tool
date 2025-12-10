@@ -20,13 +20,10 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
     setLocalScale(newScale)
   })
 
-  const combinedRef = (el: SVGGElement | null) => {
-    dragRef.current = el
-  }
 
   return (
     <g
-      ref={combinedRef}
+      ref={dragRef}
       transform={`translate(${x}, ${y}) scale(${localScale})`}
       onDoubleClick={(e) => e.stopPropagation()}
     >
