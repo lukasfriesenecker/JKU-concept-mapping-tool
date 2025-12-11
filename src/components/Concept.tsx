@@ -12,25 +12,33 @@ interface ConceptProps {
 }
 
 function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
-  const [localScale, setLocalScale] = useState(scale)
+
+  const [rect, setRect] = useState({
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 50
+  });
 
   const dragRef = useDraggable(id, scale, onDrag)
 
-  const scaleRef = useScalable(id, localScale, (id, newScale) => {
-    setLocalScale(newScale)
-  })
+  const scaleRef = useScalable(id, rect, (newRect) => {
+    setRect(newRect);
+  });
 
 
   return (
     <g
       ref={dragRef}
-      transform={`translate(${x}, ${y}) scale(${localScale})`}
+      transform={`translate(${x}, ${y})`}
       onDoubleClick={(e) => e.stopPropagation()}
     >
       <rect
         ref={scaleRef}
-        width="100"
-        height="50"
+        x={rect.x}
+        y={rect.y}
+        width={rect.width}
+        height={rect.height}
         rx="8"
         className="fill-concept-background stroke-concept-border stroke-2 cursor-pointer"
       />

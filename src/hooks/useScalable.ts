@@ -3,30 +3,55 @@ import interact from 'interactjs'
 
 function useScalable(
   id: number,
-  initialScale: number,
-  onScale: (id: number, newScale: number) => void
+  initial: { x: number; y: number; width: number; height: number },
+  onResize: (
+    rect: { x: number; y: number; width: number; height: number }
+  ) => void
 ) {
   const ref = useRef<SVGRectElement | null>(null)
-  const scaleRef = useRef(initialScale)
-  const onScaleRef = useRef(onScale)
 
   useEffect(() => {
     if (!ref.current) return
 
-    const interactable = interact(ref.current).resizable({
+    const el = ref.current
+
+    el.setAttribute('data-x', String(initial.x))
+    el.setAttribute('data-y', String(initial.y))
+
+    const interactable = interact(el).resizable({
       edges: { left: true, right: true, top: true, bottom: true },
+      modifiers: [
+        interact.modifiers.restrictSize({
+          min: { width: 100, height: 50 },
+        }),
+      ],
       listeners: {
         move(event) {
-          const newScale = event.rect.width / 100 
-          scaleRef.current = newScale
-          onScaleRef.current(id, newScale)
+          const target = event.target
+
+          let x = parseFloat(target.getAttribute('data-x') || '0')
+          let y = parseFloat(target.getAttribute('data-y') || '0')
+
+          let width = event.rect.width
+          let height = event.rect.height
+
+          x += event.deltaRect.left
+          y += event.deltaRect.top
+
+          target.setAttribute('x', String(x))
+          target.setAttribute('y', String(y))
+          target.setAttribute('width', String(width))
+          target.setAttribute('height', String(height))
+
+          target.setAttribute('data-x', String(x))
+          target.setAttribute('data-y', String(y))
+
+          onResize({ x, y, width, height })
         },
       },
     })
 
-    return () => {
-      interactable.unset()
-    }
+    return () => interactable.unset()
   }, [id])
 
   return ref
