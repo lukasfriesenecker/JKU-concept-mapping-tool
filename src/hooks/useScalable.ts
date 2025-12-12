@@ -38,15 +38,13 @@ function useScalable(
           x += event.deltaRect.left
           y += event.deltaRect.top
 
-          target.setAttribute('x', String(x))
-          target.setAttribute('y', String(y))
+    
           target.setAttribute('width', String(width))
           target.setAttribute('height', String(height))
 
-          target.setAttribute('data-x', String(x))
-          target.setAttribute('data-y', String(y))
+      
 
-          onResize({ x, y, width, height })
+         onResize({ x, y, width, height })
         },
       },
     })
