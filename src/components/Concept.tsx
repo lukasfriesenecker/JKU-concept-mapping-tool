@@ -23,7 +23,7 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
   const dragRef = useDraggable(id, scale, onDrag)
 
   const scaleRef = useScalable(id, rect, (newRect) => {
-    console.log(newRect)
+    setRect(newRect)
   });
 
 

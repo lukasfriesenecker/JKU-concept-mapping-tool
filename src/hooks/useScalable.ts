@@ -4,9 +4,12 @@ import interact from 'interactjs'
 function useScalable(
   id: number,
   initial: { x: number; y: number; width: number; height: number },
-  onResize: (
-    rect: { x: number; y: number; width: number; height: number }
-  ) => void
+  onResize: (rect: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }) => void
 ) {
   const ref = useRef<SVGRectElement | null>(null)
 
@@ -27,24 +30,11 @@ function useScalable(
       ],
       listeners: {
         move(event) {
-          const target = event.target
-
-          let x = parseFloat(target.getAttribute('data-x') || '0')
-          let y = parseFloat(target.getAttribute('data-y') || '0')
 
           let width = event.rect.width
           let height = event.rect.height
 
-          x += event.deltaRect.left
-          y += event.deltaRect.top
-
-    
-          target.setAttribute('width', String(width))
-          target.setAttribute('height', String(height))
-
-      
-
-         onResize({ x, y, width, height })
+          onResize({ x:0,y: 0, width, height })
         },
       },
     })
