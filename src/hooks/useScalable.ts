@@ -3,23 +3,22 @@ import interact from 'interactjs'
 
 function useScalable(
   id: number,
-  initial: { x: number; y: number; width: number; height: number },
-  onResize: (rect: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }) => void
+  onScale: (
+    id: number,
+    dx: number,
+    dy: number,
+    width: string,
+    height: string
+  ) => void
 ) {
   const ref = useRef<SVGRectElement | null>(null)
+  const onScaleRef = useRef(onScale)
+  onScaleRef.current = onScale
 
   useEffect(() => {
     if (!ref.current) return
 
     const el = ref.current
-
-    el.setAttribute('data-x', String(initial.x))
-    el.setAttribute('data-y', String(initial.y))
 
     const interactable = interact(el).resizable({
       edges: { left: true, right: true, top: true, bottom: true },
@@ -30,11 +29,18 @@ function useScalable(
       ],
       listeners: {
         move(event) {
+          const target = event.target
 
-          let width = event.rect.width
-          let height = event.rect.height
+          let x = parseFloat(target.getAttribute('x')) || 0
+          let y = parseFloat(target.getAttribute('y')) || 0
 
-          onResize({ x:0,y: 0, width, height })
+          const width = event.rect.width
+          const height = event.rect.height
+
+          x += event.deltaRect.left
+          y += event.deltaRect.top       
+
+          onScaleRef.current(id, x, y, width, height)
         },
       },
     })

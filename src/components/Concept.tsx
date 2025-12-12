@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import useDraggable from '../hooks/useDraggable'
 import useScalable from '../hooks/useScalable'
 
@@ -7,24 +7,18 @@ interface ConceptProps {
   label: string
   x: number
   y: number
+  width: string
+  height: string
   scale: number
   onDrag: (id: number, dx: number, dy: number) => void
+  onScale: (id: number, dx: number, dy: number, width: string, height: string) => void
 }
 
-function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
+function Concept({ id, label, x, y, width, height, scale, onDrag, onScale }: ConceptProps) {
 
-  const [rect, setRect] = useState({
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 50
-  });
+  const dragRef = useDraggable(id, scale, onDrag);
 
-  const dragRef = useDraggable(id, scale, onDrag)
-
-  const scaleRef = useScalable(id, rect, (newRect) => {
-    setRect(newRect)
-  });
+  const scaleRef = useScalable(id, onScale);
 
 
   return (
@@ -35,10 +29,8 @@ function Concept({ id, label, x, y, scale, onDrag }: ConceptProps) {
     >
       <rect
         ref={scaleRef}
-        x={rect.x}
-        y={rect.y}
-        width={rect.width}
-        height={rect.height}
+        width={width}
+        height={height}
         rx="8"
         className="fill-concept-background stroke-concept-border stroke-2 cursor-pointer"
       />

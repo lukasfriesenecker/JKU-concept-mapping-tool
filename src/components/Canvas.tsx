@@ -7,8 +7,8 @@ function Canvas() {
   const { ref, viewport } = usePanZoom()
 
   const [concepts, setConcepts] = useState([
-    { id: 0, label: 'Concept 0', x: 150, y: 200 },
-    { id: 1, label: 'Concept 1', x: 150, y: 500 },
+    { id: 0, label: 'Concept 0', x: 150, y: 200, width:"100px", height:"50px" },
+    { id: 1, label: 'Concept 1', x: 150, y: 500, width:"100px", height:"50px" },
   ])
 
   const [connections] = useState([
@@ -42,6 +42,27 @@ function Canvas() {
     []
   )
 
+    const handleConceptScale = useCallback(
+    (id: number, dx: number, dy: number, width:string, height:string) => {
+      setConcepts((prevConcepts) =>
+        prevConcepts.map((concept) => {
+          if (concept.id === id) {
+            return {
+              ...concept,
+              x: concept.x + dx,
+              y: concept.y + dy,
+              width: width,
+              height: height
+            }
+          }
+
+          return concept
+        })
+      )
+    },
+    []
+  )
+
   const toCanvasCoordinates = useCallback(
     (localX: number, localY: number) => {
       return {
@@ -64,6 +85,8 @@ function Canvas() {
       label: 'Concept ' + concepts.length,
       x: x - 100 / 2,
       y: y - 50 / 2,
+      width: "100px",
+      height: "50px"
     }
 
     setConcepts((prev) => [...prev, newConcept])
@@ -115,8 +138,11 @@ function Canvas() {
               label={concept.label}
               x={concept.x}
               y={concept.y}
+              width={concept.width}
+              height={concept.height}
               scale={viewport.scale}
               onDrag={handleConceptDrag}
+              onScale={handleConceptScale}
             />
           ))}
         </g>
