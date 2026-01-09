@@ -38,7 +38,7 @@ function useScalable(
           const height = event.rect.height
 
           x += event.deltaRect.left
-          y += event.deltaRect.top       
+          y += event.deltaRect.top
 
           onScaleRef.current(id, x, y, width, height)
         },

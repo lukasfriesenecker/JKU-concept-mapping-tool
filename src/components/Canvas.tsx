@@ -2,13 +2,28 @@ import { useCallback, useState, type MouseEvent } from 'react'
 import Connection from './Connection'
 import Concept from './Concept'
 import usePanZoom from '../hooks/usePanZoom'
+import Toolbar from './Toolbar'
 
 function Canvas() {
   const { ref, viewport } = usePanZoom()
 
   const [concepts, setConcepts] = useState([
-    { id: 0, label: 'Concept 0', x: 150, y: 200, width:"100px", height:"50px" },
-    { id: 1, label: 'Concept 1', x: 150, y: 500, width:"100px", height:"50px" },
+    {
+      id: 0,
+      label: 'Concept 0',
+      x: 150,
+      y: 200,
+      width: '100px',
+      height: '50px',
+    },
+    {
+      id: 1,
+      label: 'Concept 1',
+      x: 150,
+      y: 500,
+      width: '100px',
+      height: '50px',
+    },
   ])
 
   const [connections] = useState([
@@ -42,8 +57,8 @@ function Canvas() {
     []
   )
 
-    const handleConceptScale = useCallback(
-    (id: number, dx: number, dy: number, width:string, height:string) => {
+  const handleConceptScale = useCallback(
+    (id: number, dx: number, dy: number, width: string, height: string) => {
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
           if (concept.id === id) {
@@ -52,7 +67,7 @@ function Canvas() {
               x: concept.x + dx,
               y: concept.y + dy,
               width: width,
-              height: height
+              height: height,
             }
           }
 
@@ -85,8 +100,8 @@ function Canvas() {
       label: 'Concept ' + concepts.length,
       x: x - 100 / 2,
       y: y - 50 / 2,
-      width: "100px",
-      height: "50px"
+      width: '100px',
+      height: '50px',
     }
 
     setConcepts((prev) => [...prev, newConcept])
@@ -94,9 +109,7 @@ function Canvas() {
 
   return (
     <div className="bg-background h-screen w-screen touch-none">
-      <div className="bg-background absolute top-10 left-10 rounded-sm px-4 py-3 shadow-lg">
-        <h1 className="font-bold">Concept Mapping Tool</h1>
-      </div>
+      <Toolbar />
 
       <svg
         ref={ref}

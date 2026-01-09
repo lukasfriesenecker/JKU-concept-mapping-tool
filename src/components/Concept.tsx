@@ -11,15 +11,29 @@ interface ConceptProps {
   height: string
   scale: number
   onDrag: (id: number, dx: number, dy: number) => void
-  onScale: (id: number, dx: number, dy: number, width: string, height: string) => void
+  onScale: (
+    id: number,
+    dx: number,
+    dy: number,
+    width: string,
+    height: string
+  ) => void
 }
 
-function Concept({ id, label, x, y, width, height, scale, onDrag, onScale }: ConceptProps) {
+function Concept({
+  id,
+  label,
+  x,
+  y,
+  width,
+  height,
+  scale,
+  onDrag,
+  onScale,
+}: ConceptProps) {
+  const dragRef = useDraggable(id, scale, onDrag)
 
-  const dragRef = useDraggable(id, scale, onDrag);
-
-  const scaleRef = useScalable(id, onScale);
-
+  const scaleRef = useScalable(id, onScale)
 
   return (
     <g
@@ -32,7 +46,7 @@ function Concept({ id, label, x, y, width, height, scale, onDrag, onScale }: Con
         width={width}
         height={height}
         rx="8"
-        className="fill-concept-background stroke-concept-border stroke-2 cursor-pointer"
+        className="fill-concept-background stroke-concept-border cursor-pointer stroke-2"
       />
 
       <circle cx={50 / 2 - 10} cy={25} r={5} className="fill-blue-500" />

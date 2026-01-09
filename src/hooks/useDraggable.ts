@@ -6,7 +6,7 @@ function useDraggable(
   scale: number,
   onDrag: (id: number, dx: number, dy: number) => void
 ) {
-const ref = useRef<SVGGElement | null>(null)
+  const ref = useRef<SVGGElement | null>(null)
 
   const scaleRef = useRef(scale)
   scaleRef.current = scale
