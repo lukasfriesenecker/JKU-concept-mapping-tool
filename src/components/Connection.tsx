@@ -31,7 +31,7 @@ function Connection({ label, start, end }: ConnectionProps) {
           width="90"
           height="30"
           rx="8"
-          className="fill-concept-background stroke-concept-border"
+          className="fill-card stroke-concept-border"
         />
 
         <text
@@ -39,7 +39,7 @@ function Connection({ label, start, end }: ConnectionProps) {
           y={centerY}
           textAnchor="middle"
           dominantBaseline="middle"
-          className="text-xs font-medium"
+          className="fill-card-foreground text-xs font-medium"
         >
           {label}
         </text>

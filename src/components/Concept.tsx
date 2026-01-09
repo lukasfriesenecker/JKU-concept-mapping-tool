@@ -46,7 +46,7 @@ function Concept({
         width={width}
         height={height}
         rx="8"
-        className="fill-concept-background stroke-concept-border cursor-pointer stroke-2"
+        className="fill-card stroke-muted-foreground stroke-concept-border cursor-pointer stroke-2"
       />
 
       <circle cx={50 / 2 - 10} cy={25} r={5} className="fill-blue-500" />
@@ -55,7 +55,7 @@ function Concept({
         x={60}
         y={30}
         textAnchor="middle"
-        className="text-sm font-medium select-none"
+        className="fill-card-foreground text-sm font-medium select-none"
       >
         {label}
       </text>

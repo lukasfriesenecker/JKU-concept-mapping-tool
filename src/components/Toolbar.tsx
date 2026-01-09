@@ -3,6 +3,7 @@ import {
   File,
   FolderOpen,
   FolderPlus,
+  Moon,
   Save,
   SlidersVertical,
   Sun,
@@ -28,8 +29,11 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useTheme } from './ThemeProvider'
 
 function Toolbar() {
+  const { theme, setTheme } = useTheme()
+
   return (
     <div className="bg-background absolute top-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between rounded-sm border p-2 shadow-sm">
       <div className="flex h-9 flex-row gap-2">
@@ -102,8 +106,19 @@ function Toolbar() {
       <div className="flex gap-2">
         <div className="flex items-center px-1 font-medium">75 %</div>
         <Separator orientation="vertical" />
-        <Button variant="ghost" size="icon">
-          <Sun className="size-6" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            if (theme === 'light') {
+              setTheme('dark')
+            } else {
+              setTheme('light')
+            }
+          }}
+        >
+          <Sun className="size-6 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <Moon className="absolute size-6 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Button>
         <Separator orientation="vertical" />
         <Popover>

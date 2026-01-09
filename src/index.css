@@ -1,15 +1,4 @@
 @import 'tailwindcss';
-
-@theme {
-  --color-background: oklch(0.985 0.002 247.839);
-  --color-foreground: oklch(0.145 0.028 261.692);
-  --color-muted-foreground: oklch(0.556 0.03 256.8);
-
-  --color-concept-background: oklch(1 0 0);
-  --color-concept-foreground: oklch(0.145 0.028 261.692);
-  --color-concept-border: oklch(0.88 0.02 250);
-}
-
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
