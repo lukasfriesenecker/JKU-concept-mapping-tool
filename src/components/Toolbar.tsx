@@ -3,6 +3,7 @@ import {
   File,
   FolderOpen,
   FolderPlus,
+  Menu,
   Moon,
   Save,
   SlidersVertical,
@@ -30,16 +31,29 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useTheme } from './ThemeProvider'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 function Toolbar() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="bg-card absolute top-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between rounded-sm border p-2 shadow-2xl">
-      <div className="flex h-9 flex-row gap-2">
+    <div className="bg-card absolute left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between border p-2 shadow-2xl md:top-4 md:rounded-sm">
+      <div className="flex h-9 w-1/4 flex-row gap-2">
         <Menubar>
           <MenubarMenu>
-            <MenubarTrigger>Datei</MenubarTrigger>
+            <MenubarTrigger>
+              <Button variant="ghost" className="hidden md:flex">
+                Datei
+              </Button>
+              <Button variant="ghost" size="icon" className="flex md:hidden">
+                <Menu className="text-card-foreground size-6" />
+              </Button>
+            </MenubarTrigger>
             <MenubarContent>
               <MenubarItem>
                 <File className="text-card-foreground size-4" />
@@ -58,7 +72,7 @@ function Toolbar() {
                 Speichern unter
               </MenubarItem>
               <MenubarSub>
-                <MenubarSubTrigger>
+                <MenubarSubTrigger className="hidden md:flex">
                   <Download className="text-card-foreground size-4" />
                   Exportieren
                 </MenubarSubTrigger>
@@ -68,26 +82,42 @@ function Toolbar() {
                   <MenubarItem>PNG</MenubarItem>
                 </MenubarSubContent>
               </MenubarSub>
+              <Accordion type="single" className="flex md:hidden" collapsible>
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>
+                    <div className="flex gap-2">
+                      <Download className="text-card-foreground size-4" />
+                      Exportieren
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <MenubarItem>PDF</MenubarItem>
+                    <MenubarItem>JPG</MenubarItem>
+                    <MenubarItem>PNG</MenubarItem>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
-        <Separator orientation="vertical" />
-        <Button variant="ghost" size="icon">
+        <Separator orientation="vertical" className="hidden md:flex" />
+        <Button variant="ghost" size="icon" className="hidden md:flex">
           <Save className="text-card-foreground size-6" />
         </Button>
       </div>
 
-      <div>
+      <div className="flex w-1/2 justify-center">
         <Popover>
           <PopoverTrigger>
             <Button variant="ghost">
-              <p>Obst - Concep Map</p>
-              <Separator orientation="vertical" />
-              <p>Concept Map über Obst</p>
+              <div className="w-full md:w-1/2">Obst - Concept Map</div>
+              <Separator orientation="vertical" className="hidden md:flex" />
+              <div className="hidden w-1/2 md:flex">Concept Map über Obst</div>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex w-lg flex-col gap-6">
-            <div className="grid w-full max-w-sm items-center gap-3">
+
+          <PopoverContent className="flex flex-col gap-6 md:w-xl">
+            <div className="grid w-full items-center gap-3">
               <Label htmlFor="title">Titel</Label>
               <Input type="text" id="title" placeholder="Titel" />
             </div>
@@ -95,7 +125,7 @@ function Toolbar() {
               <Label htmlFor="description">Beschreibung</Label>
               <Textarea placeholder="Beschreibung" id="description" />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col justify-end gap-4 md:flex-row md:gap-2">
               <Button variant="secondary">Abbrechen</Button>
               <Button>Speichern</Button>
             </div>
@@ -103,12 +133,13 @@ function Toolbar() {
         </Popover>
       </div>
 
-      <div className="flex gap-2">
-        <div className="flex items-center px-1 font-medium">75 %</div>
-        <Separator orientation="vertical" />
+      <div className="flex w-1/4 justify-end gap-2">
+        <div className="hidden items-center px-1 font-medium md:flex">75 %</div>
+        <Separator orientation="vertical" className="hidden md:flex" />
         <Button
           variant="ghost"
           size="icon"
+          className="hidden md:flex"
           onClick={() => {
             if (theme === 'light') {
               setTheme('dark')
@@ -120,14 +151,14 @@ function Toolbar() {
           <Sun className="text-card-foreground size-6 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <Moon className="text-card-foreground absolute size-6 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Button>
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical" className="hidden md:flex" />
         <Popover>
           <PopoverTrigger>
             <Button variant="ghost" size="icon">
               <SlidersVertical className="text-card-foreground size-6" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end">
+          <PopoverContent align="end" className="md:w-72">
             <div className="flex flex-col gap-4">
               <h4>Einstellungen</h4>
               <div className="flex items-center gap-3">
@@ -138,6 +169,23 @@ function Toolbar() {
                 <Checkbox id="edit" />
                 <Label htmlFor="edit">Bearbeitung sperren</Label>
               </div>
+              <h4>Anzeigemodus</h4>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="flex md:hidden"
+                onClick={() => {
+                  if (theme === 'light') {
+                    setTheme('dark')
+                  } else {
+                    setTheme('light')
+                  }
+                }}
+              >
+                <Sun className="text-card-foreground size-6 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                <Moon className="text-card-foreground absolute size-6 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              </Button>
             </div>
           </PopoverContent>
         </Popover>
