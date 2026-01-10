@@ -21,7 +21,7 @@ function Connection({ label, start, end }: ConnectionProps) {
         y1={start.y}
         x2={end.x}
         y2={end.y}
-        className="stroke-foreground stroke-1"
+        className="stroke-card-foreground stroke-1"
       />
 
       <g>
@@ -30,8 +30,9 @@ function Connection({ label, start, end }: ConnectionProps) {
           y={centerY - 15}
           width="90"
           height="30"
-          rx="8"
-          className="fill-card stroke-concept-border"
+          rx="15"
+          ry="15"
+          className="fill-card stroke-border stroke-1"
         />
 
         <text

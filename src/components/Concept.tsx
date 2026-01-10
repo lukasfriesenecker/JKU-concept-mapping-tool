@@ -46,10 +46,10 @@ function Concept({
         width={width}
         height={height}
         rx="8"
-        className="fill-card stroke-muted-foreground stroke-concept-border cursor-pointer stroke-2"
+        className="fill-card stroke-border cursor-pointer stroke-1"
       />
 
-      <circle cx={50 / 2 - 10} cy={25} r={5} className="fill-blue-500" />
+      <circle cx={50 / 2 - 10} cy={25} r={8} className="fill-ring" />
 
       <text
         x={60}

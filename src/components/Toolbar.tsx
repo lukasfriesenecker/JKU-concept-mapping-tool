@@ -35,31 +35,31 @@ function Toolbar() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="bg-background absolute top-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between rounded-sm border p-2 shadow-sm">
+    <div className="bg-card absolute top-4 left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between rounded-sm border p-2 shadow-2xl">
       <div className="flex h-9 flex-row gap-2">
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>Datei</MenubarTrigger>
             <MenubarContent>
               <MenubarItem>
-                <File className="size-4" />
+                <File className="text-card-foreground size-4" />
                 Neues Projekt
               </MenubarItem>
               <MenubarItem>
-                <FolderOpen className="size-4" />
+                <FolderOpen className="text-card-foreground size-4" />
                 Projekt öffnen
               </MenubarItem>
               <MenubarItem>
-                <Save className="size-4" />
+                <Save className="text-card-foreground size-4" />
                 Speichern
               </MenubarItem>
               <MenubarItem>
-                <FolderPlus className="size-4" />
+                <FolderPlus className="text-card-foreground size-4" />
                 Speichern unter
               </MenubarItem>
               <MenubarSub>
                 <MenubarSubTrigger>
-                  <Download className="size-4" />
+                  <Download className="text-card-foreground size-4" />
                   Exportieren
                 </MenubarSubTrigger>
                 <MenubarSubContent>
@@ -73,7 +73,7 @@ function Toolbar() {
         </Menubar>
         <Separator orientation="vertical" />
         <Button variant="ghost" size="icon">
-          <Save className="size-6" />
+          <Save className="text-card-foreground size-6" />
         </Button>
       </div>
 
@@ -117,14 +117,14 @@ function Toolbar() {
             }
           }}
         >
-          <Sun className="size-6 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute size-6 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+          <Sun className="text-card-foreground size-6 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <Moon className="text-card-foreground absolute size-6 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Button>
         <Separator orientation="vertical" />
         <Popover>
           <PopoverTrigger>
             <Button variant="ghost" size="icon">
-              <SlidersVertical className="size-6" />
+              <SlidersVertical className="text-card-foreground size-6" />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end">
