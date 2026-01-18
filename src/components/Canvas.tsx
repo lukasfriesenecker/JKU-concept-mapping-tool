@@ -3,9 +3,26 @@ import Connection from './Connection'
 import Concept from './Concept'
 import usePanZoom from '../hooks/usePanZoom'
 import Toolbar from './Toolbar'
+import ConceptMenu from './ConceptMenu'
 
 function Canvas() {
   const { ref, viewport } = usePanZoom()
+
+  const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
+
+  const toggleSelection = useCallback((id: number) => {
+    setselectedConceptIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((sid) => sid !== id)
+      } else {
+        return [...prev, id]
+      }
+    })
+  }, [])
+
+  const deselectConcept = (id: number) => {
+    setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
+  }
 
   const [concepts, setConcepts] = useState([
     {
@@ -111,6 +128,23 @@ function Canvas() {
     <div className="bg-background h-screen w-screen touch-none">
       <Toolbar />
 
+      <div className="pointer-events-none absolute inset-0">
+        {selectedConceptIds.map((id) => {
+          const concept = concepts.find((c) => c.id === id)
+          if (!concept) return null
+
+          return (
+            <div key={`menu-${id}`} className="pointer-events-auto">
+              <ConceptMenu
+                concept={concept}
+                viewport={viewport}
+                onDeselect={deselectConcept}
+              />
+            </div>
+          )
+        })}
+      </div>
+
       <svg
         ref={ref}
         className="h-full w-full"
@@ -156,6 +190,8 @@ function Canvas() {
               scale={viewport.scale}
               onDrag={handleConceptDrag}
               onScale={handleConceptScale}
+              onSelect={toggleSelection}
+              isSelected={selectedConceptIds.includes(concept.id)}
             />
           ))}
         </g>
