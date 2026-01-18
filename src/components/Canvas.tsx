@@ -24,6 +24,14 @@ function Canvas() {
     setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
   }
 
+  const deleteConcept = useCallback((id: number) => {
+    setConcepts((prev) => prev.filter((concept) => concept.id !== id))
+    setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
+    setConnections((prev) => prev.filter((conn) => conn.from !== id && conn.to !== id))
+
+  }, [])
+
+
   const [concepts, setConcepts] = useState([
     {
       id: 0,
@@ -43,10 +51,9 @@ function Canvas() {
     },
   ])
 
-  const [connections] = useState([
+  const [connections, setConnections] = useState([
     { id: 0, label: 'Connection 0', from: 0, to: 1 },
   ])
-
   const getConceptCenter = (id: number) => {
     const concept = concepts.find((c) => c.id === id)
 
@@ -139,6 +146,7 @@ function Canvas() {
                 concept={concept}
                 viewport={viewport}
                 onDeselect={deselectConcept}
+                onDelete={deleteConcept}
               />
             </div>
           )
