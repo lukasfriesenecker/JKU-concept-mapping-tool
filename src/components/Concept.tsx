@@ -36,7 +36,7 @@ function Concept({
   isSelected,
 }: ConceptProps) {
   const dragRef = useDraggable(id, scale, onDrag)
-  const scaleRef = useScalable(id, onScale)
+  const scaleRef = useScalable(id, onScale, isSelected)
 
   const handleRadius = 6 / scale
 

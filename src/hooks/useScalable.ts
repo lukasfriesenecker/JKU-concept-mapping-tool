@@ -9,7 +9,8 @@ function useScalable(
     dy: number,
     width: string,
     height: string
-  ) => void
+  ) => void,
+  isResizable: boolean
 ) {
   const ref = useRef<SVGRectElement | null>(null)
   const onScaleRef = useRef(onScale)
@@ -17,6 +18,7 @@ function useScalable(
 
   useEffect(() => {
     if (!ref.current) return
+     if (!isResizable) return
 
     const el = ref.current
 
@@ -46,7 +48,7 @@ function useScalable(
     })
 
     return () => interactable.unset()
-  }, [id])
+  }, [id, isResizable])
 
   return ref
 }

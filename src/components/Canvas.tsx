@@ -94,7 +94,6 @@ function Canvas() {
               height: height,
             }
           }
-
           return concept
         })
       )
