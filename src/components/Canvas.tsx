@@ -9,6 +9,24 @@ function Canvas() {
   const { ref, viewport } = usePanZoom()
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
+  const [editingConceptIds, setEditingConceptIds] = useState<number[]>([]);
+
+  const toggleEditing = (id: number) => {
+    setEditingConceptIds(prev =>
+      prev.includes(id)
+        ? prev.filter((eid) => eid !== id)
+        : [...prev, id]
+    );
+  };
+
+  const startEditing = (id: number) => {
+    setEditingConceptIds(prev => prev.includes(id) ? prev : [...prev, id]);
+  };
+
+  const stopEditing = (id: number) => {
+    setEditingConceptIds(prev => prev.filter(eid => eid !== id));
+  };
+
 
   const toggleSelection = useCallback((id: number) => {
     setselectedConceptIds((prev) => {
@@ -24,11 +42,15 @@ function Canvas() {
     setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
   }
 
+  const renameConcept = (id: number) => {
+    startEditing(id);
+  }
+
+
   const deleteConcept = useCallback((id: number) => {
     setConcepts((prev) => prev.filter((concept) => concept.id !== id))
     setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
     setConnections((prev) => prev.filter((conn) => conn.from !== id && conn.to !== id))
-
   }, [])
 
 
@@ -74,6 +96,23 @@ function Canvas() {
             }
           }
 
+          return concept
+        })
+      )
+    },
+    []
+  )
+
+  const handleLabelChange = useCallback(
+    (id: number, value: string) => {
+      setConcepts((prevConcepts) =>
+        prevConcepts.map((concept) => {
+          if (concept.id === id) {
+            return {
+              ...concept,
+              label: value,
+            }
+          }
           return concept
         })
       )
@@ -146,6 +185,7 @@ function Canvas() {
                 viewport={viewport}
                 onDeselect={deselectConcept}
                 onDelete={deleteConcept}
+                onRename={renameConcept}
               />
             </div>
           )
@@ -198,6 +238,10 @@ function Canvas() {
               onDrag={handleConceptDrag}
               onScale={handleConceptScale}
               onSelect={toggleSelection}
+              editing={editingConceptIds.includes(concept.id)}
+              onStartEditing={() => startEditing(concept.id)}
+              onStopEditing={() => stopEditing(concept.id)}
+              onLabelChange={handleLabelChange}
               isSelected={selectedConceptIds.includes(concept.id)}
             />
           ))}

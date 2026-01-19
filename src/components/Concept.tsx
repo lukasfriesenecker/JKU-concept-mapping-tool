@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import useDraggable from '../hooks/useDraggable'
 import useScalable from '../hooks/useScalable'
 
@@ -19,6 +19,9 @@ interface ConceptProps {
     height: string
   ) => void
   onSelect: (id: number) => void
+  onLabelChange: (id: number, value: string) => void;
+  editing: boolean;
+  onStopEditing: () => void;
   isSelected: boolean
 }
 
@@ -33,58 +36,99 @@ function Concept({
   onDrag,
   onScale,
   onSelect,
+  editing,
+  onStopEditing,
+  onLabelChange,
   isSelected,
 }: ConceptProps) {
   const dragRef = useDraggable(id, scale, onDrag)
   const scaleRef = useScalable(id, onScale, isSelected)
+  const [labelValue, setLabel] = useState(label);
+  const inputRef = useRef<HTMLInputElement>(null);
+
 
   const handleRadius = 6 / scale
+  useEffect(() => {
+    if (editing && inputRef.current) {
+
+      inputRef.current.focus();
+    }
+  }, [editing]);
 
   return (
-    <g
-      ref={dragRef}
-      transform={`translate(${x}, ${y})`}
-      onClick={(e) => {
-        e.stopPropagation()
-        onSelect(id)
-      }}
-      onDoubleClick={(e) => e.stopPropagation()}
-    >
-      <rect
-        ref={scaleRef}
-        width={width}
-        height={height}
-        rx="4"
-        className={`fill-card cursor-pointer transition-colors ${
-          isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
-        }`}
-      />
+    <>
+      <g
+        ref={dragRef}
+        transform={`translate(${x}, ${y})`}
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect(id)
+        }}
+        onDoubleClick={(e) => e.stopPropagation()}
+      >
+        <rect
+          ref={scaleRef}
+          width={width}
+          height={height}
+          rx="4"
+          className={`fill-card cursor-pointer transition-colors ${isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
+            }`}
+        />
 
-      {isSelected && (
-        <g className="pointer-events-none">
-          <circle cx="0" cy="0" r={handleRadius} className="fill-ring" />
-          <circle cx={width} cy="0" r={handleRadius} className="fill-ring" />
-          <circle cx="0" cy={height} r={handleRadius} className="fill-ring" />
-          <circle
-            cx={width}
-            cy={height}
-            r={handleRadius}
-            className="fill-ring"
-          />
+        {isSelected && (
+          <g className="pointer-events-none">
+            <circle cx="0" cy="0" r={handleRadius} className="fill-ring" />
+            <circle cx={width} cy="0" r={handleRadius} className="fill-ring" />
+            <circle cx="0" cy={height} r={handleRadius} className="fill-ring" />
+            <circle
+              cx={width}
+              cy={height}
+              r={handleRadius}
+              className="fill-ring"
+            />
+          </g>
+        )}
+
+        <circle cx={50 / 2 - 10} cy={25} r={8} className="fill-ring" />
+        {!editing && (
+          <text
+            x={30}
+            y={30}
+            
+            className="fill-card-foreground text-sm font-medium select-none"
+          >
+            {label}
+          </text>
+        )}
+      </g>
+      {editing && (
+        <g transform={`translate(${x}, ${y})`}>
+          <foreignObject
+            x={30}
+            y={10}
+            width={width}
+            height={30}
+          >
+            <input
+              ref={inputRef}
+              value={labelValue}
+              onChange={e => setLabel(e.target.value)}
+              onBlur={() => {
+                onStopEditing();
+                onLabelChange(id, labelValue)
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  onStopEditing();
+                  onLabelChange(id, labelValue)
+                }
+              }}
+              className="w-full h-full text-sm font-medium bg-transparent outline-none"
+            />
+          </foreignObject>
         </g>
       )}
-
-      <circle cx={50 / 2 - 10} cy={25} r={8} className="fill-ring" />
-
-      <text
-        x={60}
-        y={30}
-        textAnchor="middle"
-        className="fill-card-foreground text-sm font-medium select-none"
-      >
-        {label}
-      </text>
-    </g>
+    </>
   )
 }
 

@@ -6,9 +6,10 @@ interface ConceptMenuProps {
   viewport: { x: number; y: number; scale: number }
   onDeselect: (id: number) => void
   onDelete: (id: number) => void
+  onRename: (id: number) => void
 }
 
-function ConceptMenu({ concept, viewport, onDeselect, onDelete }: ConceptMenuProps) {
+function ConceptMenu({ concept, viewport, onDeselect, onDelete, onRename }: ConceptMenuProps) {
   const screenX = concept.x * viewport.scale + viewport.x
   const screenY = concept.y * viewport.scale + viewport.y
 
@@ -23,7 +24,7 @@ function ConceptMenu({ concept, viewport, onDeselect, onDelete }: ConceptMenuPro
       }}
     >
       <div className="flex flex-col">
-        <Button variant="ghost" className="flex justify-start gap-4">
+        <Button onClick={() => onRename(concept.id)} variant="ghost" className="flex justify-start gap-4">
           <Pencil />
           Rename
         </Button>
