@@ -11,14 +11,6 @@ function Canvas() {
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
   const [editingConceptIds, setEditingConceptIds] = useState<number[]>([]);
 
-  const toggleEditing = (id: number) => {
-    setEditingConceptIds(prev =>
-      prev.includes(id)
-        ? prev.filter((eid) => eid !== id)
-        : [...prev, id]
-    );
-  };
-
   const startEditing = (id: number) => {
     setEditingConceptIds(prev => prev.includes(id) ? prev : [...prev, id]);
   };
@@ -239,7 +231,6 @@ function Canvas() {
               onScale={handleConceptScale}
               onSelect={toggleSelection}
               editing={editingConceptIds.includes(concept.id)}
-              onStartEditing={() => startEditing(concept.id)}
               onStopEditing={() => stopEditing(concept.id)}
               onLabelChange={handleLabelChange}
               isSelected={selectedConceptIds.includes(concept.id)}
