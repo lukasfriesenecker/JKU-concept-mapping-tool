@@ -42,7 +42,7 @@ function Toolbar() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="bg-card absolute left-1/2 flex w-full max-w-4xl -translate-x-1/2 justify-between border p-2 shadow-2xl md:top-4 md:rounded-sm">
+    <div className="bg-card absolute left-1/2 flex w-full -translate-x-1/2 justify-between border p-2 shadow-2xl md:rounded-sm lg:top-4 lg:w-4xl">
       <div className="flex h-9 w-1/4 flex-row gap-2">
         <Menubar>
           <MenubarMenu>
@@ -169,7 +169,7 @@ function Toolbar() {
                 <Checkbox id="edit" />
                 <Label htmlFor="edit">Bearbeitung sperren</Label>
               </div>
-              <h4>Anzeigemodus</h4>
+              <h4 className="flex md:hidden">Anzeigemodus</h4>
 
               <Button
                 variant="ghost"

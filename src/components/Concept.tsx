@@ -19,10 +19,14 @@ interface ConceptProps {
     height: string
   ) => void
   onSelect: (id: number) => void
-  onLabelChange: (id: number, value: string) => void;
-  editing: boolean;
-  onStopEditing: () => void;
+  onLabelChange: (id: number, value: string) => void
+  editing: boolean
+  onStopEditing: () => void
   isSelected: boolean
+  onStartConnection: (
+    fromId: number,
+    event: React.PointerEvent<Element>
+  ) => void
 }
 
 function Concept({
@@ -40,29 +44,52 @@ function Concept({
   onStopEditing,
   onLabelChange,
   isSelected,
+  onStartConnection,
 }: ConceptProps) {
   const dragRef = useDraggable(id, scale, onDrag)
   const scaleRef = useScalable(id, onScale, isSelected)
-  const [labelValue, setLabel] = useState(label);
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  const [labelValue, setLabel] = useState(label)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleRadius = 6 / scale
   useEffect(() => {
     if (editing && inputRef.current) {
-
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [editing]);
+  }, [editing])
+
+  const pointerStartPos = useRef({ x: 0, y: 0 })
+  const hasMoved = useRef(false)
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartPos.current = { x: e.clientX, y: e.clientY }
+    hasMoved.current = false
+  }
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    const distance = Math.sqrt(
+      Math.pow(e.clientX - pointerStartPos.current.x, 2) +
+        Math.pow(e.clientY - pointerStartPos.current.y, 2)
+    )
+
+    if (distance > 5) {
+      hasMoved.current = true
+    }
+  }
 
   return (
     <>
       <g
         ref={dragRef}
+        data-concept-id={id}
         transform={`translate(${x}, ${y})`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onClick={(e) => {
           e.stopPropagation()
-          onSelect(id)
+          if (!hasMoved.current) {
+            onSelect(id)
+          }
         }}
         onDoubleClick={(e) => e.stopPropagation()}
       >
@@ -71,8 +98,9 @@ function Concept({
           width={width}
           height={height}
           rx="4"
-          className={`fill-card cursor-pointer transition-colors ${isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
-            }`}
+          className={`fill-card cursor-pointer transition-colors ${
+            isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
+          }`}
         />
 
         {isSelected && (
@@ -89,12 +117,20 @@ function Concept({
           </g>
         )}
 
-        <circle cx={50 / 2 - 10} cy={25} r={8} className="fill-ring" />
+        <circle
+          cx={50 / 2 - 10}
+          cy={25}
+          r={8}
+          className="fill-ring"
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            onStartConnection(id, e)
+          }}
+        />
         {!editing && (
           <text
             x={30}
             y={30}
-            
             className="fill-card-foreground text-sm font-medium select-none"
           >
             {label}
@@ -103,27 +139,22 @@ function Concept({
       </g>
       {editing && (
         <g transform={`translate(${x}, ${y})`}>
-          <foreignObject
-            x={30}
-            y={10}
-            width={width}
-            height={30}
-          >
+          <foreignObject x={30} y={10} width={width} height={30}>
             <input
               ref={inputRef}
               value={labelValue}
-              onChange={e => setLabel(e.target.value)}
+              onChange={(e) => setLabel(e.target.value)}
               onBlur={() => {
-                onStopEditing();
+                onStopEditing()
                 onLabelChange(id, labelValue)
               }}
-              onKeyDown={e => {
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  onStopEditing();
+                  onStopEditing()
                   onLabelChange(id, labelValue)
                 }
               }}
-              className="w-full h-full text-sm font-medium bg-transparent outline-none"
+              className="h-full w-full bg-transparent text-sm font-medium outline-none"
             />
           </foreignObject>
         </g>
