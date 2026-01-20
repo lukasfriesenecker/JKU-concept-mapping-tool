@@ -150,8 +150,6 @@ function Concept({
       {editing && (
         <g transform={`translate(${x}, ${y})`}>
           <foreignObject
-            x={0}
-            y={0}
             width={width}
             height={height}
           >
@@ -160,7 +158,7 @@ function Concept({
               style={{
                 paddingLeft: '30px',
                 paddingRight: '5px',
-                paddingTop: '17px'
+                paddingTop: '15px'
               }}
               value={labelValue}
               onChange={e => setLabel(e.target.value)}
