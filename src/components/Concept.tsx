@@ -83,7 +83,6 @@ function Concept({
     if (!inputRef.current) return;
 
     const textWidth = inputRef.current.scrollWidth;
-    console.log(textWidth);
 
     onInput(id, textWidth.toString());
   };
@@ -160,7 +159,7 @@ function Concept({
               ref={inputRef}
               style={{
                 paddingLeft: '30px',
-                paddingRight: '5px'
+                paddingRight: '5px',
               }}
               value={labelValue}
               onChange={e => setLabel(e.target.value)}

@@ -115,7 +115,6 @@ function Canvas() {
 
   const handleOnInput = useCallback(
     (id: number, value: string) => {
-      console.log(value);
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
           if (concept.id === id) {
