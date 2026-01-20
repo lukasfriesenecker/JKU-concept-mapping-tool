@@ -9,16 +9,15 @@ function Canvas() {
   const { ref, viewport } = usePanZoom()
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
-  const [editingConceptIds, setEditingConceptIds] = useState<number[]>([]);
+  const [editingConceptIds, setEditingConceptIds] = useState<number[]>([])
 
   const startEditing = (id: number) => {
-    setEditingConceptIds(prev => prev.includes(id) ? prev : [...prev, id]);
-  };
+    setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
+  }
 
   const stopEditing = (id: number) => {
-    setEditingConceptIds(prev => prev.filter(eid => eid !== id));
-  };
-
+    setEditingConceptIds((prev) => prev.filter((eid) => eid !== id))
+  }
 
   const toggleSelection = useCallback((id: number) => {
     setselectedConceptIds((prev) => {
@@ -39,13 +38,13 @@ function Canvas() {
     deselectConcept(id);
   }
 
-
   const deleteConcept = useCallback((id: number) => {
     setConcepts((prev) => prev.filter((concept) => concept.id !== id))
     setselectedConceptIds((prev) => prev.filter((sid) => sid !== id))
-    setConnections((prev) => prev.filter((conn) => conn.from !== id && conn.to !== id))
+    setConnections((prev) =>
+      prev.filter((conn) => conn.from !== id && conn.to !== id)
+    )
   }, [])
-
 
   const [concepts, setConcepts] = useState([
     {
@@ -95,6 +94,7 @@ function Canvas() {
     },
     []
   )
+
 
   const handleLabelChange = useCallback(
     (id: number, value: string) => {
@@ -180,6 +180,85 @@ function Canvas() {
     setConcepts((prev) => [...prev, newConcept])
   }
 
+  const [activePointerConnections, setActivePointerConnections] = useState<
+    Record<
+      number,
+      {
+        fromId: number
+        currentX: number
+        currentY: number
+      }
+    >
+  >({})
+
+  const handleStartConnection = (fromId: number, event: React.PointerEvent) => {
+    ;(event.target as Element).setPointerCapture(event.pointerId)
+
+    const svgRect = ref.current?.getBoundingClientRect()
+    if (!svgRect) return
+
+    const { x, y } = toCanvasCoordinates(
+      event.clientX - svgRect.left,
+      event.clientY - svgRect.top
+    )
+
+    setActivePointerConnections((prev) => ({
+      ...prev,
+      [event.pointerId]: { fromId, currentX: x, currentY: y },
+    }))
+  }
+
+  const handlePointerMove = (event: React.PointerEvent) => {
+    if (!activePointerConnections[event.pointerId]) return
+
+    const svgRect = ref.current?.getBoundingClientRect()
+    if (!svgRect) return
+
+    const { x, y } = toCanvasCoordinates(
+      event.clientX - svgRect.left,
+      event.clientY - svgRect.top
+    )
+
+    setActivePointerConnections((prev) => ({
+      ...prev,
+      [event.pointerId]: { ...prev[event.pointerId], currentX: x, currentY: y },
+    }))
+  }
+
+  const handleGlobalPointerUp = (event: React.PointerEvent) => {
+    const pending = activePointerConnections[event.pointerId]
+    if (!pending) return
+
+    const elementAtPoint = document.elementFromPoint(
+      event.clientX,
+      event.clientY
+    )
+
+    const conceptElement = elementAtPoint?.closest('g[data-concept-id]')
+    const toId = conceptElement
+      ? parseInt(conceptElement.getAttribute('data-concept-id') || '')
+      : null
+
+    if (toId !== null && pending.fromId !== toId) {
+      const newConnection = {
+        id: connections.length,
+        label: 'Connection' + connections.length,
+        from: pending.fromId,
+        to: toId,
+      }
+
+      setConnections((prev) => [...prev, newConnection])
+    }
+
+    setActivePointerConnections((prev) => {
+      const next = { ...prev }
+
+      delete next[event.pointerId]
+
+      return next
+    })
+  }
+
   return (
     <div className="bg-background h-screen w-screen touch-none">
       <Toolbar />
@@ -207,6 +286,8 @@ function Canvas() {
         ref={ref}
         className="h-full w-full"
         onDoubleClick={handleDoubleClick}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handleGlobalPointerUp}
       >
         <defs>
           <pattern
@@ -254,8 +335,26 @@ function Canvas() {
               onLabelChange={handleLabelChange}
               onInput={handleOnInput}
               isSelected={selectedConceptIds.includes(concept.id)}
+              onStartConnection={handleStartConnection}
             />
           ))}
+
+          {Object.entries(activePointerConnections).map(
+            ([pointerId, pending]) => {
+              const startPos = getConceptCenter(pending.fromId)
+
+              return (
+                <line
+                  key={`${pointerId}`}
+                  x1={startPos.x - 35}
+                  y1={startPos.y}
+                  x2={pending.currentX}
+                  y2={pending.currentY}
+                  className="stroke-card-foreground pointer-events-none stroke-1"
+                />
+              )
+            }
+          )}
         </g>
       </svg>
     </div>
