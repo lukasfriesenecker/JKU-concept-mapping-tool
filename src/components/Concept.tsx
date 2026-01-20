@@ -160,6 +160,7 @@ function Concept({
               style={{
                 paddingLeft: '30px',
                 paddingRight: '5px',
+                paddingTop: '17px'
               }}
               value={labelValue}
               onChange={e => setLabel(e.target.value)}
@@ -176,7 +177,7 @@ function Concept({
                   onLabelChange(id, labelValue)
                 }
               }}
-              className="h-full w-full bg-transparent text-sm font-medium outline-none"
+              className="w-full bg-transparent text-sm font-medium outline-none"
             />
           </foreignObject>
         </g>
