@@ -36,6 +36,7 @@ function Canvas() {
 
   const renameConcept = (id: number) => {
     startEditing(id);
+    deselectConcept(id);
   }
 
 
@@ -103,6 +104,24 @@ function Canvas() {
             return {
               ...concept,
               label: value,
+            }
+          }
+          return concept
+        })
+      )
+    },
+    []
+  )
+
+  const handleOnInput = useCallback(
+    (id: number, value: string) => {
+      console.log(value);
+      setConcepts((prevConcepts) =>
+        prevConcepts.map((concept) => {
+          if (concept.id === id) {
+            return {
+              ...concept,
+              width: value
             }
           }
           return concept
@@ -233,6 +252,7 @@ function Canvas() {
               editing={editingConceptIds.includes(concept.id)}
               onStopEditing={() => stopEditing(concept.id)}
               onLabelChange={handleLabelChange}
+              onInput={handleOnInput}
               isSelected={selectedConceptIds.includes(concept.id)}
             />
           ))}

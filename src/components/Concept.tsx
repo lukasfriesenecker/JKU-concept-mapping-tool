@@ -22,6 +22,7 @@ interface ConceptProps {
   onLabelChange: (id: number, value: string) => void;
   editing: boolean;
   onStopEditing: () => void;
+  onInput: (id: number, value: string) => void;
   isSelected: boolean
 }
 
@@ -40,6 +41,7 @@ function Concept({
   onStopEditing,
   onLabelChange,
   isSelected,
+  onInput
 }: ConceptProps) {
   const dragRef = useDraggable(id, scale, onDrag)
   const scaleRef = useScalable(id, onScale, isSelected)
@@ -55,6 +57,15 @@ function Concept({
     }
   }, [editing]);
 
+  const handleInput = () => {
+    if (!inputRef.current) return;
+
+    const textWidth = inputRef.current.scrollWidth;
+    console.log(textWidth);
+
+    onInput(id, textWidth.toString());
+  };
+
   return (
     <>
       <g
@@ -67,6 +78,7 @@ function Concept({
         onDoubleClick={(e) => e.stopPropagation()}
       >
         <rect
+
           ref={scaleRef}
           width={width}
           height={height}
@@ -89,12 +101,11 @@ function Concept({
           </g>
         )}
 
-        <circle cx={50 / 2 - 10} cy={25} r={8} className="fill-ring" />
+        <circle cx={15} cy={25} r={8} className="fill-ring" />
         {!editing && (
           <text
             x={30}
             y={30}
-            
             className="fill-card-foreground text-sm font-medium select-none"
           >
             {label}
@@ -104,15 +115,22 @@ function Concept({
       {editing && (
         <g transform={`translate(${x}, ${y})`}>
           <foreignObject
-            x={30}
-            y={10}
+            x={0}
+            y={0}
             width={width}
-            height={30}
+            height={height}
           >
             <input
               ref={inputRef}
+              style={{
+                paddingLeft: '30px',
+                paddingRight: '5px'
+              }}
               value={labelValue}
               onChange={e => setLabel(e.target.value)}
+              onInput={() => {
+                handleInput()
+              }}
               onBlur={() => {
                 onStopEditing();
                 onLabelChange(id, labelValue)
