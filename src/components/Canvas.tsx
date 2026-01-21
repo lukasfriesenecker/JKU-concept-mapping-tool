@@ -4,12 +4,15 @@ import Concept from './Concept'
 import usePanZoom from '../hooks/usePanZoom'
 import Toolbar from './Toolbar'
 import ConceptMenu from './ConceptMenu'
+import KeyboardWrapper from './KeyboardWrapper'
 
 function Canvas() {
   const { ref, viewport } = usePanZoom()
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
   const [editingConceptIds, setEditingConceptIds] = useState<number[]>([])
+
+
 
   const startEditing = (id: number) => {
     setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
@@ -97,7 +100,7 @@ function Canvas() {
 
 
   const handleLabelChange = useCallback(
-    (id: number, value: string) => {
+    (id: number, value: string) => {   
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
           if (concept.id === id) {
@@ -113,7 +116,14 @@ function Canvas() {
     []
   )
 
-  const handleOnInput = useCallback(
+ const handleOnEnter = useCallback(
+    (id: number) => {
+      stopEditing(id);
+    },
+    []
+  )
+
+   const lableChangeWidthAdjustment = useCallback(
     (id: number, value: string) => {
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
@@ -129,6 +139,7 @@ function Canvas() {
     },
     []
   )
+
 
   const handleConceptScale = useCallback(
     (id: number, dx: number, dy: number, width: string, height: string) => {
@@ -191,7 +202,7 @@ function Canvas() {
   >({})
 
   const handleStartConnection = (fromId: number, event: React.PointerEvent) => {
-    ;(event.target as Element).setPointerCapture(event.pointerId)
+    ; (event.target as Element).setPointerCapture(event.pointerId)
 
     const svgRect = ref.current?.getBoundingClientRect()
     if (!svgRect) return
@@ -258,6 +269,9 @@ function Canvas() {
     })
   }
 
+ 
+ 
+
   return (
     <div className="bg-background h-screen w-screen touch-none">
       <Toolbar />
@@ -280,6 +294,22 @@ function Canvas() {
           )
         })}
       </div>
+
+
+
+      <div className="pointer-events-none absolute inset-0">
+        {editingConceptIds.map((id) => {
+          const concept = concepts.find((c) => c.id === id)
+          if (!concept) return null
+          return (
+            <div key={`keyboard-${id}`} className="pointer-events-auto">
+              <KeyboardWrapper concept={concept} viewport={viewport} onEnter={handleOnEnter}  onChange={handleLabelChange} />
+            </div>
+          )
+        })}
+
+      </div>
+
 
       <svg
         ref={ref}
@@ -329,14 +359,12 @@ function Canvas() {
               onDrag={handleConceptDrag}
               onScale={handleConceptScale}
               onSelect={toggleSelection}
-              editing={editingConceptIds.includes(concept.id)}
-              onStopEditing={() => stopEditing(concept.id)}
-              onLabelChange={handleLabelChange}
-              onInput={handleOnInput}
               isSelected={selectedConceptIds.includes(concept.id)}
               onStartConnection={handleStartConnection}
+              onLabelChange={lableChangeWidthAdjustment}
             />
           ))}
+
 
           {Object.entries(activePointerConnections).map(
             ([pointerId, pending]) => {
