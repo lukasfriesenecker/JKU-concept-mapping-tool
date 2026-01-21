@@ -38,7 +38,12 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 
-function Toolbar() {
+interface ToolbarProps {
+  onSave: () => void
+  onSaveAs: () => void
+}
+
+function Toolbar({ onSave, onSaveAs }: ToolbarProps) {
   const { theme, setTheme } = useTheme()
 
   return (
@@ -63,11 +68,11 @@ function Toolbar() {
                 <FolderOpen className="text-card-foreground size-4" />
                 Projekt öffnen
               </MenubarItem>
-              <MenubarItem>
+              <MenubarItem onClick={onSave}>
                 <Save className="text-card-foreground size-4" />
                 Speichern
               </MenubarItem>
-              <MenubarItem>
+              <MenubarItem onClick={onSaveAs}>
                 <FolderPlus className="text-card-foreground size-4" />
                 Speichern unter
               </MenubarItem>
@@ -101,7 +106,12 @@ function Toolbar() {
           </MenubarMenu>
         </Menubar>
         <Separator orientation="vertical" className="hidden md:flex" />
-        <Button variant="ghost" size="icon" className="hidden md:flex">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:flex"
+          onClick={onSave}
+        >
           <Save className="text-card-foreground size-6" />
         </Button>
       </div>

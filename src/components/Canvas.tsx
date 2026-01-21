@@ -1,9 +1,11 @@
+/// <reference types="@types/wicg-file-system-access" />
 import { useCallback, useState, type MouseEvent } from 'react'
 import Connection from './Connection'
 import Concept from './Concept'
 import usePanZoom from '../hooks/usePanZoom'
 import Toolbar from './Toolbar'
 import ConceptMenu from './ConceptMenu'
+import { toast } from 'sonner'
 
 function Canvas() {
   const { ref, viewport } = usePanZoom()
@@ -34,8 +36,8 @@ function Canvas() {
   }
 
   const renameConcept = (id: number) => {
-    startEditing(id);
-    deselectConcept(id);
+    startEditing(id)
+    deselectConcept(id)
   }
 
   const deleteConcept = useCallback((id: number) => {
@@ -45,6 +47,9 @@ function Canvas() {
       prev.filter((conn) => conn.from !== id && conn.to !== id)
     )
   }, [])
+
+  const [title] = useState('Neue Concept Map')
+  const [description] = useState('Neue Concept Map Beschreibung')
 
   const [concepts, setConcepts] = useState([
     {
@@ -68,6 +73,7 @@ function Canvas() {
   const [connections, setConnections] = useState([
     { id: 0, label: 'Connection 0', from: 0, to: 1 },
   ])
+
   const getConceptCenter = (id: number) => {
     const concept = concepts.find((c) => c.id === id)
 
@@ -95,40 +101,33 @@ function Canvas() {
     []
   )
 
-
-  const handleLabelChange = useCallback(
-    (id: number, value: string) => {
-      setConcepts((prevConcepts) =>
-        prevConcepts.map((concept) => {
-          if (concept.id === id) {
-            return {
-              ...concept,
-              label: value,
-            }
+  const handleLabelChange = useCallback((id: number, value: string) => {
+    setConcepts((prevConcepts) =>
+      prevConcepts.map((concept) => {
+        if (concept.id === id) {
+          return {
+            ...concept,
+            label: value,
           }
-          return concept
-        })
-      )
-    },
-    []
-  )
+        }
+        return concept
+      })
+    )
+  }, [])
 
-  const handleOnInput = useCallback(
-    (id: number, value: string) => {
-      setConcepts((prevConcepts) =>
-        prevConcepts.map((concept) => {
-          if (concept.id === id) {
-            return {
-              ...concept,
-              width: value
-            }
+  const handleOnInput = useCallback((id: number, value: string) => {
+    setConcepts((prevConcepts) =>
+      prevConcepts.map((concept) => {
+        if (concept.id === id) {
+          return {
+            ...concept,
+            width: value,
           }
-          return concept
-        })
-      )
-    },
-    []
-  )
+        }
+        return concept
+      })
+    )
+  }, [])
 
   const handleConceptScale = useCallback(
     (id: number, dx: number, dy: number, width: string, height: string) => {
@@ -258,9 +257,79 @@ function Canvas() {
     })
   }
 
+  const [fileHandle, setFileHandle] = useState<FileSystemFileHandle | null>(
+    null
+  )
+
+  const supportsFileSystemAccess =
+    'showSaveFilePicker' in window &&
+    (() => {
+      try {
+        return window.self === window.top
+      } catch {
+        return false
+      }
+    })()
+
+  const handleSaveAs = async () => {
+    if (supportsFileSystemAccess) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'concept_map.json',
+          types: [
+            {
+              description: 'JSON File',
+              accept: { 'application/json': ['.json'] },
+            },
+          ],
+        })
+
+        setFileHandle(handle)
+        await writeToFile(handle)
+        toast.success('Datei gepsichert', { position: 'bottom-center' })
+      } catch (error) {
+        toast.error('Fehler beim Speichern der Datei', {
+          position: 'bottom-center',
+        })
+        console.error(error)
+      }
+    }
+  }
+
+  const handleSave = async () => {
+    if (supportsFileSystemAccess) {
+      try {
+        if (!fileHandle) {
+          return handleSaveAs()
+        }
+
+        await writeToFile(fileHandle)
+        toast.success('Datei gespeichert', { position: 'bottom-center' })
+      } catch (error) {
+        toast.error('Fehler beim Speichern der Datei', {
+          position: 'bottom-center',
+        })
+        console.error(error)
+      }
+    }
+  }
+
+  const writeToFile = async (handle: FileSystemFileHandle) => {
+    const projectData = {
+      title: title,
+      description: description,
+      concepts: concepts,
+      connections: connections,
+    }
+
+    const writable = await handle.createWritable()
+    await writable.write(JSON.stringify(projectData, null, 2))
+    await writable.close()
+  }
+
   return (
     <div className="bg-background h-screen w-screen touch-none">
-      <Toolbar />
+      <Toolbar onSave={handleSave} onSaveAs={handleSaveAs} />
 
       <div className="pointer-events-none absolute inset-0">
         {selectedConceptIds.map((id) => {
