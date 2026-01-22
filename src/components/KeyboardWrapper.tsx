@@ -24,7 +24,7 @@ function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
   const screenX = concept.x * viewport.scale + viewport.x
   const screenY = concept.y * viewport.scale + viewport.y
 
-  const conceptWidth = parseFloat(concept.width) * viewport.scale
+  const conceptHeight = parseFloat(concept.height) * viewport.scale
 
   const onKeyPress = (button: string) => {
     if (button === "{shift}" || button === "{lock}") {
@@ -41,8 +41,8 @@ function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
     <div
       className="bg-card animate-in fade-in zoom-in-95 absolute z-50 flex items-center gap-2 rounded-lg border p-1 shadow-xl duration-150"
       style={{
-        left: `${screenX + conceptWidth + 10}px`,
-        top: `${screenY}px`,
+        left: `${screenX}px`,
+        top: `${screenY + conceptHeight +10}px`,
       }}
     >
       <Keyboard

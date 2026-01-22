@@ -18,6 +18,7 @@ function Canvas() {
 
   const startEditing = (id: number) => {
     setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
+    deselectConcept(id);
   }
 
   const stopEditing = (id: number) => {
@@ -29,6 +30,7 @@ function Canvas() {
       if (prev.includes(id)) {
         return prev.filter((sid) => sid !== id)
       } else {
+        stopEditing(id);
         return [...prev, id]
       }
     })
@@ -40,7 +42,6 @@ function Canvas() {
 
   const renameConcept = (id: number) => {
     startEditing(id)
-    deselectConcept(id)
   }
 
   const deleteConcept = useCallback((id: number) => {
