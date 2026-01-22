@@ -185,3 +185,54 @@ svg {
   shape-rendering: geometricPrecision;
   image-rendering: crisp-edges;
 }
+
+.simple-keyboard {
+  max-width: 850px;
+}
+
+/*
+  keyboard themes
+*/
+.simple-keyboard.dark {
+  background-color: rgb(39, 39, 39);
+  border-radius: 0;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.simple-keyboard.dark .hg-button {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+.simple-keyboard.dark .hg-button:active {
+  background: #1c4995;
+  color: white;
+}
+
+.simple-keyboard.light {
+  background-color: rgb(245, 245, 245);
+  border-radius: 0;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.simple-keyboard.light .hg-button {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.simple-keyboard.light .hg-button:active {
+  background: #e0e7ff;
+  color: #1c4995;
+}
+

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
+import { useTheme } from './ThemeProvider'
+
 
 interface IProps {
   concept: any
@@ -12,6 +14,12 @@ interface IProps {
 
 function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
   const [layoutName, setLayoutName] = useState("default");
+  const { theme } = useTheme()
+  const keyboardTheme =
+    theme === 'dark'
+      ? 'hg-theme-default dark'
+      : 'hg-theme-default light'
+
 
   const screenX = concept.x * viewport.scale + viewport.x
   const screenY = concept.y * viewport.scale + viewport.y
@@ -41,6 +49,7 @@ function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
         layoutName={layoutName}
         onChange={(value) => onChange(concept.id, value)} onKeyPress={onKeyPress}
         onInit={(keyboard) => keyboard.setInput(concept.label)}
+        theme={keyboardTheme}
       />
     </div>
   );
