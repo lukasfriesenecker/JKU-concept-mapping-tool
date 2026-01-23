@@ -37,14 +37,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { useEffect, useState } from 'react'
 
 interface ToolbarProps {
+  title: string
+  description: string
   onSave: () => void
   onSaveAs: () => void
+  onSaveProjectInfo: (title: string, desc: string) => void
 }
 
-function Toolbar({ onSave, onSaveAs }: ToolbarProps) {
+function Toolbar({ onSave, onSaveAs, onSaveProjectInfo, title: initialTitle,
+  description: initialDescription }: ToolbarProps) {
   const { theme, setTheme } = useTheme()
+  const [title, setTitle] = useState(initialTitle)
+  const [description, setDescription] = useState(initialDescription)
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
 
   return (
     <div className="bg-card absolute left-1/2 flex w-full -translate-x-1/2 justify-between border p-2 shadow-2xl md:rounded-sm lg:top-4 lg:w-4xl">
@@ -117,27 +126,45 @@ function Toolbar({ onSave, onSaveAs }: ToolbarProps) {
       </div>
 
       <div className="flex w-1/2 justify-center">
-        <Popover>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger>
             <Button variant="ghost">
-              <div className="w-full md:w-1/2">Obst - Concept Map</div>
+              {title.length > 20 ? title.slice(0, 20) + '…' : title}
               <Separator orientation="vertical" className="hidden md:flex" />
-              <div className="hidden w-1/2 md:flex">Concept Map über Obst</div>
+              {description.length > 40 ? description.slice(0, 40) + '…' : description}
             </Button>
           </PopoverTrigger>
 
           <PopoverContent className="flex flex-col gap-6 md:w-xl">
             <div className="grid w-full items-center gap-3">
               <Label htmlFor="title">Titel</Label>
-              <Input type="text" id="title" placeholder="Titel" />
+              <Input type="text"
+                id="title"
+                placeholder="Titel"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)} />
             </div>
             <div className="grid w-full gap-3">
               <Label htmlFor="description">Beschreibung</Label>
-              <Textarea placeholder="Beschreibung" id="description" />
+              <Textarea id="description"
+                placeholder="Beschreibung"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)} />
             </div>
             <div className="flex flex-col justify-end gap-4 md:flex-row md:gap-2">
-              <Button variant="secondary">Abbrechen</Button>
-              <Button>Speichern</Button>
+              <Button onClick={() => {
+                setTitle(initialTitle)
+                setDescription(initialDescription)
+                setPopoverOpen(false)
+              }} variant="secondary">Abbrechen</Button>
+              <Button
+                onClick={() => {
+                  onSaveProjectInfo(title, description)
+                  setPopoverOpen(false);
+                }}
+              >
+                Speichern
+              </Button>
             </div>
           </PopoverContent>
         </Popover>

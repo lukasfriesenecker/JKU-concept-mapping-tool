@@ -32,8 +32,6 @@ function Canvas() {
     to: number
   }
 
-
-
   const startEditing = (id: number) => {
     setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
     deselectConcept(id);
@@ -70,8 +68,25 @@ function Canvas() {
     )
   }, [])
 
-  const [title] = useState('Neue Concept Map')
-  const [description] = useState('Neue Concept Map Beschreibung')
+  const [title, setTitle] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return 'Neue Concept Map'
+    try {
+      return JSON.parse(stored).title ?? 'Neue Concept Map'
+    } catch {
+      return 'Neue Concept Map'
+    }
+  })
+
+  const [description, setDescription] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return 'Neue Concept Map Beschreibung'
+    try {
+      return JSON.parse(stored).description ?? 'Neue Concept Map Beschreibung'
+    } catch {
+      return 'Neue Concept Map Beschreibung'
+    }
+  })
 
   const [concepts, setConcepts] = useState<Concept[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -379,6 +394,11 @@ function Canvas() {
     }
   }
 
+  const handleSaveProjectInfo = (newTitle: string, newDesc: string) => {
+    setTitle(newTitle)
+    setDescription(newDesc)
+  }
+
   const writeToFile = async (handle: FileSystemFileHandle) => {
     const projectData = {
       title: title,
@@ -394,7 +414,8 @@ function Canvas() {
 
   return (
     <div className="bg-background h-screen w-screen touch-none">
-      <Toolbar onSave={handleSave} onSaveAs={handleSaveAs} />
+      <Toolbar title={title}
+        description={description} onSaveProjectInfo={handleSaveProjectInfo} onSave={handleSave} onSaveAs={handleSaveAs} />
 
       <div className="pointer-events-none absolute inset-0">
         {selectedConceptIds.map((id) => {
