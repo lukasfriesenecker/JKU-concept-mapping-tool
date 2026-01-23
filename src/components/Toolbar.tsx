@@ -37,7 +37,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 interface ToolbarProps {
   title: string
@@ -126,7 +126,13 @@ function Toolbar({ onSave, onSaveAs, onSaveProjectInfo, title: initialTitle,
       </div>
 
       <div className="flex w-1/2 justify-center">
-        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <Popover open={popoverOpen} onOpenChange={(open) => {
+          if (!open) {
+            setTitle(initialTitle)
+            setDescription(initialDescription)
+          }
+          setPopoverOpen(open)
+        }}>
           <PopoverTrigger>
             <Button variant="ghost">
               {title.length > 20 ? title.slice(0, 20) + '…' : title}
