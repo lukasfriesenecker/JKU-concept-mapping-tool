@@ -1,5 +1,5 @@
 /// <reference types="@types/wicg-file-system-access" />
-import { useCallback, useState, type MouseEvent } from 'react'
+import { useCallback, useEffect, useState, type MouseEvent } from 'react'
 import Connection from './Connection'
 import Concept from './Concept'
 import usePanZoom from '../hooks/usePanZoom'
@@ -13,6 +13,24 @@ function Canvas() {
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
   const [editingConceptIds, setEditingConceptIds] = useState<number[]>([])
+  const STORAGE_KEY = 'concept-map-data'
+
+
+  type Concept = {
+    id: number
+    label: string
+    x: number
+    y: number
+    width: string
+    height: string
+  }
+
+  type Connection = {
+    id: number
+    label: string
+    from: number
+    to: number
+  }
 
 
 
@@ -55,28 +73,56 @@ function Canvas() {
   const [title] = useState('Neue Concept Map')
   const [description] = useState('Neue Concept Map Beschreibung')
 
-  const [concepts, setConcepts] = useState([
-    {
-      id: 0,
-      label: 'Concept 0',
-      x: 150,
-      y: 200,
-      width: '100px',
-      height: '50px',
-    },
-    {
-      id: 1,
-      label: 'Concept 1',
-      x: 150,
-      y: 500,
-      width: '100px',
-      height: '50px',
-    },
-  ])
+  const [concepts, setConcepts] = useState<Concept[]>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return [
+      {
+        id: 0,
+        label: 'Concept 0',
+        x: 150,
+        y: 200,
+        width: '100px',
+        height: '50px',
+      },
+      {
+        id: 1,
+        label: 'Concept 1',
+        x: 150,
+        y: 500,
+        width: '100px',
+        height: '50px',
+      },
+    ]
 
-  const [connections, setConnections] = useState([
-    { id: 0, label: 'Connection 0', from: 0, to: 1 },
-  ])
+    try {
+      return JSON.parse(stored).concepts ?? []
+    } catch {
+      return []
+    }
+  })
+
+  const [connections, setConnections] = useState<Connection[]>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return [{ id: 0, label: 'Connection 0', from: 0, to: 1 }]
+
+    try {
+      return JSON.parse(stored).connections ?? []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    const data = {
+      title,
+      description,
+      concepts,
+      connections,
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  }, [concepts, connections, title, description])
+
 
   const getConceptCenter = (id: number) => {
     const concept = concepts.find((c) => c.id === id)
@@ -107,7 +153,7 @@ function Canvas() {
 
 
   const handleLabelChange = useCallback(
-    (id: number, value: string) => {   
+    (id: number, value: string) => {
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
           if (concept.id === id) {
@@ -123,14 +169,14 @@ function Canvas() {
     []
   )
 
- const handleOnEnter = useCallback(
+  const handleOnEnter = useCallback(
     (id: number) => {
       stopEditing(id);
     },
     []
   )
 
-   const lableChangeWidthAdjustment = useCallback(
+  const lableChangeWidthAdjustment = useCallback(
     (id: number, value: string) => {
       setConcepts((prevConcepts) =>
         prevConcepts.map((concept) => {
@@ -185,7 +231,7 @@ function Canvas() {
 
     const { x, y } = toCanvasCoordinates(localX, localY)
 
-    const newConcept = {
+    const newConcept: Concept = {
       id: concepts.length,
       label: 'Concept ' + concepts.length,
       x: x - 100 / 2,
@@ -257,7 +303,7 @@ function Canvas() {
       : null
 
     if (toId !== null && pending.fromId !== toId) {
-      const newConnection = {
+      const newConnection: Connection = {
         id: connections.length,
         label: 'Connection' + connections.length,
         from: pending.fromId,
@@ -377,7 +423,7 @@ function Canvas() {
           if (!concept) return null
           return (
             <div key={`keyboard-${id}`} className="pointer-events-auto">
-              <KeyboardWrapper concept={concept} viewport={viewport} onEnter={handleOnEnter}  onChange={handleLabelChange} />
+              <KeyboardWrapper concept={concept} viewport={viewport} onEnter={handleOnEnter} onChange={handleLabelChange} />
             </div>
           )
         })}
