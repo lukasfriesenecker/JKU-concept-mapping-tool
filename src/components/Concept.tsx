@@ -24,7 +24,7 @@ interface ConceptProps {
     fromId: number,
     event: React.PointerEvent<Element>
   ) => void
-  onLabelChange: (id: number, textWidth: string) => void
+  onLabelChange: (id: number, textWidth: string, type: string) => void
 }
 
 function Concept({
@@ -57,9 +57,9 @@ function Concept({
 
     const bbox = textRef.current.getBBox()
     const rect = scaleRef.current.getBBox();
-    const textWidth = Math.max(rect.width,bbox.width + 35);
+    const textWidth = Math.max(rect.width, bbox.width + 35);
 
-    onLabelChange(id, `${textWidth}px`)
+    onLabelChange(id, `${textWidth}px`, "concept")
   }, [label, id, onLabelChange])
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -95,7 +95,6 @@ function Concept({
       onDoubleClick={(e) => e.stopPropagation()}
     >
       <rect
-
         ref={scaleRef}
         width={width}
         height={height}

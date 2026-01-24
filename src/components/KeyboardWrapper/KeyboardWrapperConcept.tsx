@@ -1,18 +1,19 @@
 import { useState } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-import { useTheme } from './ThemeProvider'
+import { useTheme } from '../ThemeProvider'
+import type { IConcept } from "../interfaces/Concept";
+
 
 
 interface IProps {
-  concept: any
+  concept: IConcept
   viewport: { x: number; y: number; scale: number }
-  onChange: (id: number, value: string) => void
-  onEnter: (id: number) => void
-
+  onChange: (id: number, value: string, type: string) => void
+  onEnter: (id: number, type: string) => void
 }
 
-function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
+function KeyboardWrapperConcept({ concept, viewport, onChange, onEnter }: IProps) {
   const [layoutName, setLayoutName] = useState("default");
   const { theme } = useTheme()
   const keyboardTheme =
@@ -20,11 +21,10 @@ function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
       ? 'hg-theme-default dark'
       : 'hg-theme-default light'
 
-
   const screenX = concept.x * viewport.scale + viewport.x
   const screenY = concept.y * viewport.scale + viewport.y
 
-  const conceptHeight = parseFloat(concept.height) * viewport.scale
+  const height = parseFloat(concept.height) * viewport.scale
 
   const onKeyPress = (button: string) => {
     if (button === "{shift}" || button === "{lock}") {
@@ -32,27 +32,32 @@ function KeyboardWrapper({ concept, viewport, onChange, onEnter }: IProps) {
     }
 
     if (button === "{enter}") {
-      onEnter(concept.id);
+      onEnter(concept.id, "concept");
     }
   };
-
 
   return (
     <div
       className="bg-card animate-in fade-in zoom-in-95 absolute z-50 flex items-center gap-2 rounded-lg border p-1 shadow-xl duration-150"
       style={{
         left: `${screenX}px`,
-        top: `${screenY + conceptHeight +10}px`,
+        top: `${screenY + height + 10}px`,
       }}
     >
       <Keyboard
         layoutName={layoutName}
-        onChange={(value) => onChange(concept.id, value)} onKeyPress={onKeyPress}
+        onChange={(value) => onChange(concept.id, value, "concept")} onKeyPress={onKeyPress}
         onInit={(keyboard) => keyboard.setInput(concept.label)}
         theme={keyboardTheme}
+        display={{
+          "{bksp}": "⌫",
+          "{enter}": "Submit",
+          "{shift}": "⇧",
+          "{space}": "␣"
+        }}
       />
     </div>
   );
 }
 
-export default KeyboardWrapper;
+export default KeyboardWrapperConcept;

@@ -6,39 +6,41 @@ import usePanZoom from '../hooks/usePanZoom'
 import Toolbar from './Toolbar'
 import ConceptMenu from './ConceptMenu'
 import { toast } from 'sonner'
-import KeyboardWrapper from './KeyboardWrapper'
+import KeyboardWrapper from './KeyboardWrapper/KeyboardWrapperConcept'
+import KeyboardWrapperConnection from './KeyboardWrapper/KeyboardWrapperConnection'
+import type { IConcept } from './interfaces/Concept'
+import type { IConnection } from './interfaces/Connection'
+
+
+
 
 function Canvas() {
+
   const { ref, viewport } = usePanZoom()
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
   const [editingConceptIds, setEditingConceptIds] = useState<number[]>([])
+  const [editingConncetionIds, setEditingConnectionIds] = useState<number[]>([])
+
   const STORAGE_KEY = 'concept-map-data'
 
 
-  type Concept = {
-    id: number
-    label: string
-    x: number
-    y: number
-    width: string
-    height: string
-  }
 
-  type Connection = {
-    id: number
-    label: string
-    from: number
-    to: number
-  }
-
-  const startEditing = (id: number) => {
+  const startEditingConcept = (id: number) => {
     setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
     deselectConcept(id);
   }
 
-  const stopEditing = (id: number) => {
+  const stopEditingConcept = (id: number) => {
     setEditingConceptIds((prev) => prev.filter((eid) => eid !== id))
+  }
+
+  const startEditingConnection = (id: number) => {
+    setEditingConnectionIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
+  }
+
+  const stopEditingConnection = (id: number) => {
+    setEditingConnectionIds((prev) => prev.filter((eid) => eid !== id))
   }
 
   const toggleSelection = useCallback((id: number) => {
@@ -46,7 +48,7 @@ function Canvas() {
       if (prev.includes(id)) {
         return prev.filter((sid) => sid !== id)
       } else {
-        stopEditing(id);
+        stopEditingConcept(id);
         return [...prev, id]
       }
     })
@@ -57,7 +59,7 @@ function Canvas() {
   }
 
   const renameConcept = (id: number) => {
-    startEditing(id)
+    startEditingConcept(id)
   }
 
   const deleteConcept = useCallback((id: number) => {
@@ -88,7 +90,7 @@ function Canvas() {
     }
   })
 
-  const [concepts, setConcepts] = useState<Concept[]>(() => {
+  const [concepts, setConcepts] = useState<IConcept[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (!stored) return [
       {
@@ -116,9 +118,9 @@ function Canvas() {
     }
   })
 
-  const [connections, setConnections] = useState<Connection[]>(() => {
+  const [connections, setConnections] = useState<IConnection[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return [{ id: 0, label: 'Connection 0', from: 0, to: 1 }]
+    if (!stored) return [{ id: 0, label: 'Connection 0', from: 0, to: 1, width:"90" }]
 
     try {
       return JSON.parse(stored).connections ?? []
@@ -168,42 +170,75 @@ function Canvas() {
 
 
   const handleLabelChange = useCallback(
-    (id: number, value: string) => {
-      setConcepts((prevConcepts) =>
-        prevConcepts.map((concept) => {
-          if (concept.id === id) {
-            return {
-              ...concept,
-              label: value,
+    (id: number, value: string, type: string) => {
+      if (type == "concept") {
+        setConcepts((prevConcepts) =>
+          prevConcepts.map((concept) => {
+            if (concept.id === id) {
+              return {
+                ...concept,
+                label: value,
+              }
             }
-          }
-          return concept
-        })
-      )
+            return concept
+          })
+        )
+      } else {
+        setConnections((prevConnections) =>
+          prevConnections.map((con) => {
+            if (con.id === id) {
+              return {
+                ...con,
+                label: value,
+              }
+            }
+            return con
+          })
+        )
+      }
     },
     []
   )
 
   const handleOnEnter = useCallback(
-    (id: number) => {
-      stopEditing(id);
+    (id: number, type: string) => {
+      if (type == "concept") {
+        stopEditingConcept(id);
+      }
+      else {
+        stopEditingConnection(id);
+      }
     },
     []
   )
 
   const lableChangeWidthAdjustment = useCallback(
-    (id: number, value: string) => {
-      setConcepts((prevConcepts) =>
-        prevConcepts.map((concept) => {
-          if (concept.id === id) {
-            return {
-              ...concept,
-              width: value
+    (id: number, value: string, type: string) => {
+      if (type == "concept") {
+        setConcepts((prevConcepts) =>
+          prevConcepts.map((concept) => {
+            if (concept.id === id) {
+              return {
+                ...concept,
+                width: value
+              }
             }
-          }
-          return concept
-        })
-      )
+            return concept
+          })
+        )
+      } else {
+        setConnections((prevConnections) =>
+          prevConnections.map((con) => {
+            if (con.id === id) {
+              return {
+                ...con,
+                width: value
+              }
+            }
+            return con
+          })
+        )
+      }
     },
     []
   )
@@ -246,7 +281,7 @@ function Canvas() {
 
     const { x, y } = toCanvasCoordinates(localX, localY)
 
-    const newConcept: Concept = {
+    const newConcept: IConcept = {
       id: concepts.length,
       label: 'Concept ' + concepts.length,
       x: x - 100 / 2,
@@ -318,11 +353,12 @@ function Canvas() {
       : null
 
     if (toId !== null && pending.fromId !== toId) {
-      const newConnection: Connection = {
+      const newConnection: IConnection = {
         id: connections.length,
         label: 'Connection' + connections.length,
         from: pending.fromId,
         to: toId,
+        width: "90"
       }
 
       setConnections((prev) => [...prev, newConnection])
@@ -451,6 +487,20 @@ function Canvas() {
 
       </div>
 
+      <div className="pointer-events-none absolute inset-0">
+        {editingConncetionIds.map((id) => {
+          const connection = connections.find((c) => c.id === id)
+          if (!connection) return null
+          return (
+            <div key={`keyboard-con-${id}`} className="pointer-events-auto">
+              <KeyboardWrapperConnection connection={connection} from={getConceptCenter(connection.from)}
+                to={getConceptCenter(connection.to)} viewport={viewport} onEnter={handleOnEnter} onChange={handleLabelChange} />
+            </div>
+          )
+        })}
+
+      </div>
+
 
       <svg
         ref={ref}
@@ -479,12 +529,17 @@ function Canvas() {
           transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`}
         >
           {connections.map((connection) => (
-            <Connection
-              key={connection.id}
-              label={connection.label}
-              start={getConceptCenter(connection.from)}
-              end={getConceptCenter(connection.to)}
-            />
+            <g key={connection.id}
+              onClick={() => startEditingConnection(connection.id)}>
+              <Connection
+                width={connection.width}
+                id={connection.id}
+                label={connection.label}
+                from={getConceptCenter(connection.from)}
+                to={getConceptCenter(connection.to)}
+                onLabelChange={lableChangeWidthAdjustment}
+              />
+            </g>
           ))}
 
           {concepts.map((concept) => (
