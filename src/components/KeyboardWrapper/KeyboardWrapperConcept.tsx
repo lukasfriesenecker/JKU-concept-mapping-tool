@@ -1,10 +1,8 @@
-import { useState } from "react";
-import Keyboard from "react-simple-keyboard";
-import "react-simple-keyboard/build/css/index.css";
+import { useState } from 'react'
+import Keyboard from 'react-simple-keyboard'
+import 'react-simple-keyboard/build/css/index.css'
 import { useTheme } from '../ThemeProvider'
-import type { IConcept } from "../interfaces/Concept";
-
-
+import type { IConcept } from '../interfaces/Concept'
 
 interface IProps {
   concept: IConcept
@@ -13,13 +11,16 @@ interface IProps {
   onEnter: (id: number, type: string) => void
 }
 
-function KeyboardWrapperConcept({ concept, viewport, onChange, onEnter }: IProps) {
-  const [layoutName, setLayoutName] = useState("default");
+function KeyboardWrapperConcept({
+  concept,
+  viewport,
+  onChange,
+  onEnter,
+}: IProps) {
+  const [layoutName, setLayoutName] = useState('default')
   const { theme } = useTheme()
   const keyboardTheme =
-    theme === 'dark'
-      ? 'hg-theme-default dark'
-      : 'hg-theme-default light'
+    theme === 'dark' ? 'hg-theme-default dark' : 'hg-theme-default light'
 
   const screenX = concept.x * viewport.scale + viewport.x
   const screenY = concept.y * viewport.scale + viewport.y
@@ -27,14 +28,14 @@ function KeyboardWrapperConcept({ concept, viewport, onChange, onEnter }: IProps
   const height = parseFloat(concept.height) * viewport.scale
 
   const onKeyPress = (button: string) => {
-    if (button === "{shift}" || button === "{lock}") {
-      setLayoutName(layoutName === "default" ? "shift" : "default");
+    if (button === '{shift}' || button === '{lock}') {
+      setLayoutName(layoutName === 'default' ? 'shift' : 'default')
     }
 
-    if (button === "{enter}") {
-      onEnter(concept.id, "concept");
+    if (button === '{enter}') {
+      onEnter(concept.id, 'concept')
     }
-  };
+  }
 
   return (
     <div
@@ -46,18 +47,19 @@ function KeyboardWrapperConcept({ concept, viewport, onChange, onEnter }: IProps
     >
       <Keyboard
         layoutName={layoutName}
-        onChange={(value) => onChange(concept.id, value, "concept")} onKeyPress={onKeyPress}
+        onChange={(value) => onChange(concept.id, value, 'concept')}
+        onKeyPress={onKeyPress}
         onInit={(keyboard) => keyboard.setInput(concept.label)}
         theme={keyboardTheme}
         display={{
-          "{bksp}": "⌫",
-          "{enter}": "Submit",
-          "{shift}": "⇧",
-          "{space}": "␣"
+          '{bksp}': '⌫',
+          '{enter}': 'Submit',
+          '{shift}': '⇧',
+          '{space}': '␣',
         }}
       />
     </div>
-  );
+  )
 }
 
-export default KeyboardWrapperConcept;
+export default KeyboardWrapperConcept

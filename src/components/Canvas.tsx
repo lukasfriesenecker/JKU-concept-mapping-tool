@@ -11,11 +11,7 @@ import KeyboardWrapperConnection from './KeyboardWrapper/KeyboardWrapperConnecti
 import type { IConcept } from './interfaces/Concept'
 import type { IConnection } from './interfaces/Connection'
 
-
-
-
 function Canvas() {
-
   const { ref, viewport } = usePanZoom()
 
   const [selectedConceptIds, setselectedConceptIds] = useState<number[]>([])
@@ -24,11 +20,9 @@ function Canvas() {
 
   const STORAGE_KEY = 'concept-map-data'
 
-
-
   const startEditingConcept = (id: number) => {
     setEditingConceptIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
-    deselectConcept(id);
+    deselectConcept(id)
   }
 
   const stopEditingConcept = (id: number) => {
@@ -36,7 +30,9 @@ function Canvas() {
   }
 
   const startEditingConnection = (id: number) => {
-    setEditingConnectionIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
+    setEditingConnectionIds((prev) =>
+      prev.includes(id) ? prev : [...prev, id]
+    )
   }
 
   const stopEditingConnection = (id: number) => {
@@ -48,7 +44,7 @@ function Canvas() {
       if (prev.includes(id)) {
         return prev.filter((sid) => sid !== id)
       } else {
-        stopEditingConcept(id);
+        stopEditingConcept(id)
         return [...prev, id]
       }
     })
@@ -92,24 +88,25 @@ function Canvas() {
 
   const [concepts, setConcepts] = useState<IConcept[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return [
-      {
-        id: 0,
-        label: 'Concept 0',
-        x: 150,
-        y: 200,
-        width: '100px',
-        height: '50px',
-      },
-      {
-        id: 1,
-        label: 'Concept 1',
-        x: 150,
-        y: 500,
-        width: '100px',
-        height: '50px',
-      },
-    ]
+    if (!stored)
+      return [
+        {
+          id: 0,
+          label: 'Concept 0',
+          x: 150,
+          y: 200,
+          width: '100px',
+          height: '50px',
+        },
+        {
+          id: 1,
+          label: 'Concept 1',
+          x: 150,
+          y: 500,
+          width: '100px',
+          height: '50px',
+        },
+      ]
 
     try {
       return JSON.parse(stored).concepts ?? []
@@ -120,7 +117,8 @@ function Canvas() {
 
   const [connections, setConnections] = useState<IConnection[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return [{ id: 0, label: 'Connection 0', from: 0, to: 1, width:"90" }]
+    if (!stored)
+      return [{ id: 0, label: 'Connection 0', from: 0, to: 1, width: '90' }]
 
     try {
       return JSON.parse(stored).connections ?? []
@@ -139,7 +137,6 @@ function Canvas() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   }, [concepts, connections, title, description])
-
 
   const getConceptCenter = (id: number) => {
     const concept = concepts.find((c) => c.id === id)
@@ -168,10 +165,9 @@ function Canvas() {
     []
   )
 
-
   const handleLabelChange = useCallback(
     (id: number, value: string, type: string) => {
-      if (type == "concept") {
+      if (type == 'concept') {
         setConcepts((prevConcepts) =>
           prevConcepts.map((concept) => {
             if (concept.id === id) {
@@ -200,27 +196,23 @@ function Canvas() {
     []
   )
 
-  const handleOnEnter = useCallback(
-    (id: number, type: string) => {
-      if (type == "concept") {
-        stopEditingConcept(id);
-      }
-      else {
-        stopEditingConnection(id);
-      }
-    },
-    []
-  )
+  const handleOnEnter = useCallback((id: number, type: string) => {
+    if (type == 'concept') {
+      stopEditingConcept(id)
+    } else {
+      stopEditingConnection(id)
+    }
+  }, [])
 
   const lableChangeWidthAdjustment = useCallback(
     (id: number, value: string, type: string) => {
-      if (type == "concept") {
+      if (type == 'concept') {
         setConcepts((prevConcepts) =>
           prevConcepts.map((concept) => {
             if (concept.id === id) {
               return {
                 ...concept,
-                width: value
+                width: value,
               }
             }
             return concept
@@ -232,7 +224,7 @@ function Canvas() {
             if (con.id === id) {
               return {
                 ...con,
-                width: value
+                width: value,
               }
             }
             return con
@@ -242,7 +234,6 @@ function Canvas() {
     },
     []
   )
-
 
   const handleConceptScale = useCallback(
     (id: number, dx: number, dy: number, width: string, height: string) => {
@@ -305,7 +296,7 @@ function Canvas() {
   >({})
 
   const handleStartConnection = (fromId: number, event: React.PointerEvent) => {
-    ; (event.target as Element).setPointerCapture(event.pointerId)
+    ;(event.target as Element).setPointerCapture(event.pointerId)
 
     const svgRect = ref.current?.getBoundingClientRect()
     if (!svgRect) return
@@ -358,7 +349,7 @@ function Canvas() {
         label: 'Connection' + connections.length,
         from: pending.fromId,
         to: toId,
-        width: "90"
+        width: '90',
       }
 
       setConnections((prev) => [...prev, newConnection])
@@ -422,10 +413,12 @@ function Canvas() {
         await writeToFile(fileHandle)
         toast.success('Datei gespeichert', { position: 'bottom-center' })
       } catch (error) {
-        toast.error('Fehler beim Speichern der Datei', {
-          position: 'bottom-center',
-        })
-        console.error(error)
+        if ((error as Error).name !== 'AbortError') {
+          toast.error('Fehler beim Speichern der Datei', {
+            position: 'bottom-center',
+          })
+          console.error(error)
+        }
       }
     }
   }
@@ -448,10 +441,72 @@ function Canvas() {
     await writable.close()
   }
 
+  const handleOpen = async () => {
+    if (supportsFileSystemAccess) {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [
+            {
+              description: 'JSON File',
+              accept: { 'application/json': ['.json'] },
+            },
+          ],
+          multiple: false,
+        })
+
+        const file = await handle.getFile()
+        const content = await file.text()
+        const data = JSON.parse(content)
+
+        loadDataIntoState(data, handle)
+        toast.success('Projekt geöffnet', { position: 'bottom-center' })
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          toast.error('Fehler beim Öffnen der Datei')
+          console.error(error)
+        }
+      }
+    }
+  }
+
+  const loadDataIntoState = (
+    data: any,
+    handle: FileSystemFileHandle | null
+  ) => {
+    setConcepts(data.concepts)
+    setConnections(data.connections)
+    setTitle(data.title)
+    setDescription(data.description)
+    setFileHandle(handle)
+    setselectedConceptIds([])
+  }
+
+  const handleNewProject = () => {
+    setConcepts([])
+    setConnections([])
+    setTitle('Neue Concept Map')
+    setDescription('Neue Concept Map Beschreibung')
+
+    setFileHandle(null)
+
+    setselectedConceptIds([])
+    setEditingConceptIds([])
+    setEditingConnectionIds([])
+
+    toast.success('Neues Projekt erstellt', { position: 'bottom-center' })
+  }
+
   return (
     <div className="bg-background h-screen w-screen touch-none">
-      <Toolbar title={title}
-        description={description} onSaveProjectInfo={handleSaveProjectInfo} onSave={handleSave} onSaveAs={handleSaveAs} />
+      <Toolbar
+        title={title}
+        description={description}
+        onSaveProjectInfo={handleSaveProjectInfo}
+        onSave={handleSave}
+        onSaveAs={handleSaveAs}
+        onOpen={handleOpen}
+        onNewProject={handleNewProject}
+      />
 
       <div className="pointer-events-none absolute inset-0">
         {selectedConceptIds.map((id) => {
@@ -472,19 +527,21 @@ function Canvas() {
         })}
       </div>
 
-
-
       <div className="pointer-events-none absolute inset-0">
         {editingConceptIds.map((id) => {
           const concept = concepts.find((c) => c.id === id)
           if (!concept) return null
           return (
             <div key={`keyboard-${id}`} className="pointer-events-auto">
-              <KeyboardWrapper concept={concept} viewport={viewport} onEnter={handleOnEnter} onChange={handleLabelChange} />
+              <KeyboardWrapper
+                concept={concept}
+                viewport={viewport}
+                onEnter={handleOnEnter}
+                onChange={handleLabelChange}
+              />
             </div>
           )
         })}
-
       </div>
 
       <div className="pointer-events-none absolute inset-0">
@@ -493,14 +550,18 @@ function Canvas() {
           if (!connection) return null
           return (
             <div key={`keyboard-con-${id}`} className="pointer-events-auto">
-              <KeyboardWrapperConnection connection={connection} from={getConceptCenter(connection.from)}
-                to={getConceptCenter(connection.to)} viewport={viewport} onEnter={handleOnEnter} onChange={handleLabelChange} />
+              <KeyboardWrapperConnection
+                connection={connection}
+                from={getConceptCenter(connection.from)}
+                to={getConceptCenter(connection.to)}
+                viewport={viewport}
+                onEnter={handleOnEnter}
+                onChange={handleLabelChange}
+              />
             </div>
           )
         })}
-
       </div>
-
 
       <svg
         ref={ref}
@@ -529,8 +590,10 @@ function Canvas() {
           transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`}
         >
           {connections.map((connection) => (
-            <g key={connection.id}
-              onClick={() => startEditingConnection(connection.id)}>
+            <g
+              key={connection.id}
+              onClick={() => startEditingConnection(connection.id)}
+            >
               <Connection
                 width={connection.width}
                 id={connection.id}
@@ -560,7 +623,6 @@ function Canvas() {
               onLabelChange={lableChangeWidthAdjustment}
             />
           ))}
-
 
           {Object.entries(activePointerConnections).map(
             ([pointerId, pending]) => {

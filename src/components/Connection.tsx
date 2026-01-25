@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef } from 'react'
 
 interface ConnectionProps {
   id: number
@@ -15,19 +15,26 @@ interface ConnectionProps {
   width: string
 }
 
-function Connection({ id, label, from, to, onLabelChange, width }: ConnectionProps) {
+function Connection({
+  id,
+  label,
+  from,
+  to,
+  onLabelChange,
+  width,
+}: ConnectionProps) {
   const x = (from.x + to.x) / 2
   const y = (from.y + to.y) / 2
-  const height = "30"
+  const height = '30'
   const textRef = useRef<SVGTextElement | null>(null)
 
   useLayoutEffect(() => {
     if (!textRef.current) return
 
     const bbox = textRef.current.getBBox()
-    const textWidth = Math.max(90, bbox.width);
+    const textWidth = Math.max(90, bbox.width)
 
-    onLabelChange(id, `${textWidth}px`, "connection")
+    onLabelChange(id, `${textWidth}px`, 'connection')
   }, [label, id, onLabelChange])
 
   return (
@@ -42,7 +49,7 @@ function Connection({ id, label, from, to, onLabelChange, width }: ConnectionPro
 
       <g>
         <rect
-          x={x- 45}
+          x={x - 45}
           y={y - 15}
           width={`${parseFloat(width) + 10}px`}
           height={height}

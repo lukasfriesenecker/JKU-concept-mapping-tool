@@ -18,7 +18,7 @@ function useScalable(
 
   useEffect(() => {
     if (!ref.current) return
-     if (!isResizable) return
+    if (!isResizable) return
 
     const el = ref.current
 

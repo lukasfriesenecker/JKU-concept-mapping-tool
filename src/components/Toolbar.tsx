@@ -45,15 +45,23 @@ interface ToolbarProps {
   onSave: () => void
   onSaveAs: () => void
   onSaveProjectInfo: (title: string, desc: string) => void
+  onOpen: () => void
+  onNewProject: () => void
 }
 
-function Toolbar({ onSave, onSaveAs, onSaveProjectInfo, title: initialTitle,
-  description: initialDescription }: ToolbarProps) {
+function Toolbar({
+  onSave,
+  onSaveAs,
+  onSaveProjectInfo,
+  title: initialTitle,
+  description: initialDescription,
+  onOpen,
+  onNewProject,
+}: ToolbarProps) {
   const { theme, setTheme } = useTheme()
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState(initialDescription)
   const [popoverOpen, setPopoverOpen] = useState(false)
-
 
   return (
     <div className="bg-card absolute left-1/2 flex w-full -translate-x-1/2 justify-between border p-2 shadow-2xl md:rounded-sm lg:top-4 lg:w-4xl">
@@ -69,11 +77,11 @@ function Toolbar({ onSave, onSaveAs, onSaveProjectInfo, title: initialTitle,
               </Button>
             </MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>
+              <MenubarItem onClick={onNewProject}>
                 <File className="text-card-foreground size-4" />
                 Neues Projekt
               </MenubarItem>
-              <MenubarItem>
+              <MenubarItem onClick={onOpen}>
                 <FolderOpen className="text-card-foreground size-4" />
                 Projekt öffnen
               </MenubarItem>
@@ -126,47 +134,61 @@ function Toolbar({ onSave, onSaveAs, onSaveProjectInfo, title: initialTitle,
       </div>
 
       <div className="flex w-1/2 justify-center">
-        <Popover open={popoverOpen} onOpenChange={(open) => {
-          if (!open) {
-            setTitle(initialTitle)
-            setDescription(initialDescription)
-          }
-          setPopoverOpen(open)
-        }}>
+        <Popover
+          open={popoverOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setTitle(initialTitle)
+              setDescription(initialDescription)
+            }
+            setPopoverOpen(open)
+          }}
+        >
           <PopoverTrigger>
             <Button variant="ghost">
               {title.length > 20 ? title.slice(0, 20) + '…' : title}
               <Separator orientation="vertical" className="hidden md:flex" />
-              {description.length > 40 ? description.slice(0, 40) + '…' : description}
+              {description.length > 40
+                ? description.slice(0, 40) + '…'
+                : description}
             </Button>
           </PopoverTrigger>
 
           <PopoverContent className="flex flex-col gap-6 md:w-xl">
             <div className="grid w-full items-center gap-3">
               <Label htmlFor="title">Titel</Label>
-              <Input type="text"
+              <Input
+                type="text"
                 id="title"
                 placeholder="Titel"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)} />
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
             <div className="grid w-full gap-3">
               <Label htmlFor="description">Beschreibung</Label>
-              <Textarea id="description"
+              <Textarea
+                id="description"
                 placeholder="Beschreibung"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)} />
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </div>
             <div className="flex flex-col justify-end gap-4 md:flex-row md:gap-2">
-              <Button onClick={() => {
-                setTitle(initialTitle)
-                setDescription(initialDescription)
-                setPopoverOpen(false)
-              }} variant="secondary">Abbrechen</Button>
+              <Button
+                onClick={() => {
+                  setTitle(initialTitle)
+                  setDescription(initialDescription)
+                  setPopoverOpen(false)
+                }}
+                variant="secondary"
+              >
+                Abbrechen
+              </Button>
               <Button
                 onClick={() => {
                   onSaveProjectInfo(title, description)
-                  setPopoverOpen(false);
+                  setPopoverOpen(false)
                 }}
               >
                 Speichern

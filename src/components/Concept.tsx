@@ -50,16 +50,15 @@ function Concept({
   const hasMoved = useRef(false)
   const textRef = useRef<SVGTextElement | null>(null)
 
-
   useLayoutEffect(() => {
     if (!textRef.current) return
     if (!scaleRef.current) return
 
     const bbox = textRef.current.getBBox()
-    const rect = scaleRef.current.getBBox();
-    const textWidth = Math.max(rect.width, bbox.width + 35);
+    const rect = scaleRef.current.getBBox()
+    const textWidth = Math.max(rect.width, bbox.width + 35)
 
-    onLabelChange(id, `${textWidth}px`, "concept")
+    onLabelChange(id, `${textWidth}px`, 'concept')
   }, [label, id, onLabelChange])
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -70,14 +69,13 @@ function Concept({
   const handlePointerMove = (e: React.PointerEvent) => {
     const distance = Math.sqrt(
       Math.pow(e.clientX - pointerStartPos.current.x, 2) +
-      Math.pow(e.clientY - pointerStartPos.current.y, 2)
+        Math.pow(e.clientY - pointerStartPos.current.y, 2)
     )
 
     if (distance > 5) {
       hasMoved.current = true
     }
   }
-
 
   return (
     <g
@@ -99,8 +97,9 @@ function Concept({
         width={width}
         height={height}
         rx="4"
-        className={`fill-card cursor-pointer transition-colors ${isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
-          }`}
+        className={`fill-card cursor-pointer transition-colors ${
+          isSelected ? 'stroke-primary stroke-1' : 'stroke-border stroke-1'
+        }`}
       />
 
       {isSelected && (
@@ -136,7 +135,6 @@ function Concept({
       >
         {label}
       </text>
-
     </g>
   )
 }
