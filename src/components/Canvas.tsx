@@ -367,6 +367,28 @@ function Canvas() {
   const [fileHandle, setFileHandle] = useState<FileSystemFileHandle | null>(
     null
   )
+  const [lastSavedData, setLastSavedData] = useState<string>('')
+
+  useEffect(() => {
+    const initialData = {
+      title,
+      description,
+      concepts,
+      connections,
+    }
+    setLastSavedData(JSON.stringify(initialData))
+  }, [])
+
+  const currentData = {
+    title,
+    description,
+    concepts,
+    connections,
+  }
+
+  const currentDataString = JSON.stringify(currentData)
+
+  const hasChanges = currentDataString !== lastSavedData
 
   const supportsFileSystemAccess =
     'showSaveFilePicker' in window &&
@@ -439,6 +461,8 @@ function Canvas() {
     const writable = await handle.createWritable()
     await writable.write(JSON.stringify(projectData, null, 2))
     await writable.close()
+
+    setLastSavedData(JSON.stringify(projectData))
   }
 
   const handleOpen = async () => {
@@ -479,6 +503,7 @@ function Canvas() {
     setDescription(data.description)
     setFileHandle(handle)
     setselectedConceptIds([])
+    setLastSavedData(JSON.stringify(data))
   }
 
   const handleNewProject = () => {
@@ -492,6 +517,7 @@ function Canvas() {
     setselectedConceptIds([])
     setEditingConceptIds([])
     setEditingConnectionIds([])
+    setLastSavedData('')
 
     toast.success('Neues Projekt erstellt', { position: 'bottom-center' })
   }
@@ -506,6 +532,7 @@ function Canvas() {
         onSaveAs={handleSaveAs}
         onOpen={handleOpen}
         onNewProject={handleNewProject}
+        isSaveDisabled={!hasChanges}
       />
 
       <div className="pointer-events-none absolute inset-0">

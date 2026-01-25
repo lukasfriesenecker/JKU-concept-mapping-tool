@@ -47,6 +47,7 @@ interface ToolbarProps {
   onSaveProjectInfo: (title: string, desc: string) => void
   onOpen: () => void
   onNewProject: () => void
+  isSaveDisabled: boolean
 }
 
 function Toolbar({
@@ -57,6 +58,7 @@ function Toolbar({
   description: initialDescription,
   onOpen,
   onNewProject,
+  isSaveDisabled,
 }: ToolbarProps) {
   const { theme, setTheme } = useTheme()
   const [title, setTitle] = useState(initialTitle)
@@ -85,7 +87,7 @@ function Toolbar({
                 <FolderOpen className="text-card-foreground size-4" />
                 Projekt öffnen
               </MenubarItem>
-              <MenubarItem onClick={onSave}>
+              <MenubarItem disabled={isSaveDisabled} onClick={onSave}>
                 <Save className="text-card-foreground size-4" />
                 Speichern
               </MenubarItem>
@@ -128,6 +130,7 @@ function Toolbar({
           size="icon"
           className="hidden md:flex"
           onClick={onSave}
+          disabled={isSaveDisabled}
         >
           <Save className="text-card-foreground size-6" />
         </Button>
@@ -233,6 +236,10 @@ function Toolbar({
               <div className="flex items-center gap-3">
                 <Checkbox id="edit" />
                 <Label htmlFor="edit">Bearbeitung sperren</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Checkbox id="edit" />
+                <Label htmlFor="edit">Verbindungspunkte ausblenden</Label>
               </div>
               <h4 className="flex md:hidden">Anzeigemodus</h4>
 
